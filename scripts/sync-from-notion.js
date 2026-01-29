@@ -520,6 +520,8 @@ function buildHtml(cases) {
     .btn-link { color: var(--accent); }
     .btn-link:hover { text-decoration: underline; }
     .footer { margin-top: 2rem; padding-top: 1rem; font-size: 0.85rem; color: var(--text-muted); }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -535,7 +537,7 @@ function buildHtml(cases) {
 ${cardsHtml}
     </div>
     <footer class="footer">
-      Generado con <code>npm run sync</code>. Para regenerar: ver SETUP.md.
+      Product of FX NetOps Team 2026 · <a href="mailto:noc@fiberx.net">noc@fiberx.net</a> · <a href="https://fiberx.net" target="_blank" rel="noopener">fiberx.net</a>
     </footer>
   </div>
 </body>
