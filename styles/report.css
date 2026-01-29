@@ -1,0 +1,524 @@
+/**
+ * Estilos del reporte de casos (index + detalle de caso).
+ * Modo claro/oscuro con [data-theme] y toggle.
+ */
+
+/* ========== Tema oscuro (por defecto) ========== */
+:root,
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface-hover: #334155;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --accent: #38bdf8;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --prop-group-bg: rgba(0, 0, 0, 0.2);
+  --case-num-bg: rgba(56, 189, 248, 0.15);
+}
+
+/* ========== Tema claro ========== */
+[data-theme="light"] {
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --surface-hover: #e2e8f0;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --accent: #0284c7;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --prop-group-bg: #e2e8f0;
+  --case-num-bg: rgba(2, 132, 199, 0.12);
+}
+
+/* Respetar preferencia del sistema si no hay elección guardada */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --bg: #f1f5f9;
+    --surface: #ffffff;
+    --surface-hover: #e2e8f0;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --accent: #0284c7;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --prop-group-bg: #e2e8f0;
+    --case-num-bg: rgba(2, 132, 199, 0.12);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* Enfoque visible para teclado (accesibilidad) */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ========== Toggle modo claro/oscuro ========== */
+.theme-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-family: inherit;
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px solid var(--surface-hover);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s, border-color 0.2s;
+}
+
+.theme-toggle:hover {
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+.report-index .container,
+.report-case .container {
+  position: relative;
+}
+
+.report-index header {
+  padding-right: 8rem;
+}
+
+.report-case .page-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.report-case .page-top .theme-toggle {
+  position: static;
+}
+
+/* ========== Contenedor y layout común ========== */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* ========== Página índice (index.html) ========== */
+.report-index header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--surface-hover);
+}
+
+.report-index header h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.report-index header p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.report-index .stats {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.report-index .stats span {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.report-index .stats strong {
+  color: var(--accent);
+}
+
+.report-index .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.25rem;
+}
+
+.report-index .card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: background 0.2s;
+}
+
+.report-index .card:hover {
+  background: var(--surface-hover);
+}
+
+.report-index .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.report-index .card-num {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.report-index .badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.report-index .badge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  background: var(--badge-color, var(--surface-hover));
+  color: #fff;
+}
+
+.report-index .badge-provider {
+  background: #6366f1;
+}
+
+.report-index .card-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.report-index .card-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.report-index .card-title a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.report-index .card-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.report-index .card-time {
+  font-size: 0.85rem;
+}
+
+.report-index .time-label {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.report-index .time-sublabel {
+  color: var(--text-muted);
+  margin-left: 0.5rem;
+}
+
+.report-index .card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+/* ========== Página detalle de caso (cases/*.html) ========== */
+.report-case .container {
+  width: 100%;
+  max-width: none;
+  padding: 1.5rem clamp(1rem, 5%, 3rem);
+}
+
+.report-case .case-details {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 0;
+  box-shadow: var(--shadow);
+  border-left: 4px solid var(--accent);
+}
+
+.report-case .case-body {
+  padding: 2rem 0 0;
+  border-top: 1px solid var(--surface-hover);
+  margin-top: 1.5rem;
+}
+
+.report-case .back {
+  margin-bottom: 1rem;
+}
+
+.report-case .back a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.report-case .back a:hover {
+  color: var(--accent);
+}
+
+.report-case .case-hero {
+  padding: 0;
+  margin-bottom: 1rem;
+  background: none;
+  box-shadow: none;
+}
+
+.report-case .case-hero-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.report-case .case-num {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--case-num-bg);
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.report-case .case-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.report-case .key-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--surface-hover);
+  font-size: 0.875rem;
+}
+
+.report-case .key-info-item {
+  color: var(--text-muted);
+}
+
+.report-case .key-info-item strong {
+  color: var(--text);
+}
+
+.report-case .badge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.report-case .due-warning {
+  color: #f87171;
+  font-weight: 600;
+}
+
+.report-case .due-info {
+  color: var(--text-muted);
+}
+
+.report-case .props-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 0;
+}
+
+.report-case .prop-group {
+  background: var(--prop-group-bg);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+}
+
+.report-case .prop-group-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin: 0 0 0.75rem;
+}
+
+.report-case .prop-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.report-case .prop-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.report-case .prop-label {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.report-case .prop-value {
+  font-weight: 500;
+  text-align: right;
+  word-break: break-word;
+}
+
+.report-case .content-divider {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 1rem;
+}
+
+.report-case .detail-section {
+  margin-bottom: 1.25rem;
+}
+
+.report-case .section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: var(--accent);
+}
+
+.report-case .detail-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.report-case .detail-content {
+  background: var(--surface);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.report-case .detail-content p {
+  margin: 0 0 0.6rem;
+}
+
+.report-case .detail-content p:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+  .report-case .detail-row-2 {
+    grid-template-columns: 1fr;
+  }
+  .report-case .props-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========== Footer común ========== */
+.footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--surface-hover);
+}
+
+.report-case .footer {
+  font-size: 0.8rem;
+}
+
+.footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* ========== Botones (compartidos) ========== */
+.btn {
+  display: inline-block;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.btn-secondary {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.btn-secondary:hover {
+  background: #475569;
+}
+
+.btn-link {
+  color: var(--accent);
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+/* ========== Impresión ========== */
+@media print {
+  body {
+    background: #fff;
+    color: #111;
+  }
+  .report-index .card,
+  .report-case .case-details,
+  .report-case .detail-content {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+  .back,
+  .card-actions,
+  .btn {
+    display: none !important;
+  }
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>1. V1-16XC activation fail during provisioning ONT model 2466GN</title>
+  <link rel="stylesheet" href="../styles/report.css">
+</head>
+<body class="report-case">
+  <script>
+  (function(){var k='report-theme';var s=document.documentElement.getAttribute('data-theme')||localStorage.getItem(k)||(window.matchMedia&&window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',s);})();
+  </script>
+  <div class="container">
+    <div class="page-top">
+      <div class="back"><a href="../index.html">← Volver al reporte</a></div>
+      <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Cambiar modo claro u oscuro">Modo claro</button>
+    </div>
+    <div class="case-details">
+      <header class="case-hero">
+        <div class="case-hero-top">
+          <span class="case-num">Case #562894</span>
+          <span class="case-num">Ticket 462249</span>
+          
+          
+          <span class="badge" style="background:#dc2626">Critical 🔥</span>
+        </div>
+        <h1 class="case-title">V1-16XC activation fail during provisioning ONT model 2466GN</h1>
+        <div class="key-info">
+          <span class="key-info-item"><strong>Abierto hace 69 días</strong></span>
+          <span class="key-info-item">Creado: 2025-11-21</span>
+          
+          
+        </div>
+      </header>
+      <div class="props-grid">
+        <div class="prop-group"><h3 class="prop-group-title">Identificación</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">Internal Ticket</span><span class="prop-value">462249</span></div><div class="prop-row"><span class="prop-label">Case Number</span><span class="prop-value">562894</span></div></div></div>
+        <div class="prop-group"><h3 class="prop-group-title">Fechas</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">Created Date</span><span class="prop-value">2025-11-21</span></div></div></div>
+        <div class="prop-group"><h3 class="prop-group-title">Clasificación</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">Failure Type</span><span class="prop-value">Activation Error</span></div><div class="prop-row"><span class="prop-label">Afectation</span><span class="prop-value">Critical 🔥</span></div></div></div>
+        
+        <div class="prop-group"><h3 class="prop-group-title">Otros</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">Case Name</span><span class="prop-value">V1-16XC activation fail during provisioning ONT model 2466GN</span></div></div></div>
+      </div>
+    </div>
+    <div class="case-body">
+      <div class="content-divider">Contenido del caso</div>
+      <div class="detail-row-2"><section class="detail-section"><h2 class="section-title">Resumen</h2><div class="detail-content"><p>Se presento falla durante activación de 2466GN en v1-16xc, se tenian potencias de ONT en rango  pero la OLT generaba ACTIVATION FAIL  , durante el incidencia se cambio patchchord pero falla continuó , la ONT estaba en buen estado pues se habia probado en almacen,<br>para intentar solucionar también se reinicio la OLT , se cambió OLT por otra del mismo modelo y falla continuó , en último estatus de zhone nos dijeron que estaba pendiente liberar un nuevo firmware para corregir  problema</p></div></section><section class="detail-section"><h2 class="section-title">Notas</h2><div class="detail-content"><p>Comment/Solution Text<br>Hello Rogeiro,</p><p>I am sharing the requested information.</p><p>&gt; Have you ever tested the 2466GN on a V1-16XC before?</p><p>Yes Sr, we usually install the model 2466GN for our clients with internet services in this OLT V1-16XC but lately we have found that sometimes the OLT is rejecting the activation , We are investigating the reason for this unexpected behavior.</p><p>&gt;What is the current sw load you are running on this 2466GN ?</p><p>(D)(R) S7.0.081</p><p>&gt;Can you also please send the full show running-config on this OLT?</p><p>I attached the running-config requested</p><p>Comment/Solution Text<br>Would you agree to upgrade the ONU to latest GA load S7.0.100 and see if it improves the results?</p><p>I am not sure yet why we are having this problem, but we know that version you are currently using has a bug that some times causes memory issues on ONU and make it less responsive or even stop working. I wonder if improving the memory usage it will respond better.</p><p>Here is the link for the new GA in case you do accept to test:</p><p>ftp:fpt.zhone.com/outgoing/_1week/FIBERX/</p><p>user anonymous pass anonymous</p><p>Comment/Solution Text<br>Hi Rogerio,</p><p>I downloaded the firmware 0700100 and applied it to a ONT 2466GN in our LAB, which is connected to our LAB OLT v1-16xc, I'm getting same ACTIVATION FAIL events in the Log, I can provide you with remote access if you want to check the problem in our lab OLT.</p><p>image.png</p><p>Comment/Solution Text<br>Sorry Jose Luis, but I couldnt make it today. I will be available next Monday early in the morning.</p><p>Can you please enable the debug gpon log and try the ONT again?</p><p>enabled</p><p>configure terminal</p><p>console enable</p><p>debug gpon omci console</p><p>Lets see if there is more info ther</p></div></section></div>
+      <section class="detail-section"><h2 class="section-title">Detalle del problema</h2><div class="detail-content"><p>Se presento falla durante activación de 2466GN en v1-16xc, se tenian potencias de ONT en rango  pero la OLT generaba ACTIVATION FAIL  , durante el incidencia se cambio patchchord pero falla continuó , la ONT estaba en buen estado pues se habia probado en almacen,<br>para intentar solucionar también se reinicio la OLT , se cambió OLT por otra del mismo modelo y falla continuó , en último estatus de zhone nos dijeron que estaba pendiente liberar un nuevo firmware para corregir  problema</p></div></section><section class="detail-section"><h2 class="section-title">Resolución</h2><div class="detail-content"><p>Caso en gestión por parte de zhone</p></div></section>
+    </div>
+    <footer class="footer">
+      <a href="https://www.notion.so/V1-16XC-activation-fail-during-provisioning-ONT-model-2466GN-2f7e3293f430803e8316fca78660c90a" target="_blank" rel="noopener">Ver en Notion →</a><br>
+      FX NetOps Team 2026 · <a href="mailto:noc@fiberx.net">noc@fiberx.net</a> · <a href="https://fiberx.net" target="_blank" rel="noopener">fiberx.net</a>
+    </footer>
+  </div>
+  <script>
+  (function(){var k='report-theme';var b=document.getElementById('theme-toggle');if(!b)return;function u(){var s=document.documentElement.getAttribute('data-theme');b.textContent=s==='dark'?'Modo claro':'Modo oscuro';}u();b.addEventListener('click',function(){var s=document.documentElement.getAttribute('data-theme');s=s==='dark'?'light':'dark';localStorage.setItem(k,s);document.documentElement.setAttribute('data-theme',s);u();});})();
+  </script>
+</body>
+</html>

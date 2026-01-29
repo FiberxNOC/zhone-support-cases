@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "check": "node scripts/check-notion.js",
-    "debug": "node scripts/debug-notion-page.js",
     "sync": "node scripts/sync-from-notion.js",
-    "report": "npm run sync"
+    "build": "node scripts/build-report.js",
+    "report": "npm run sync && npm run build"
   },
   "keywords": ["notion", "support-cases", "report"],
   "license": "MIT",

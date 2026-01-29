@@ -43,15 +43,20 @@ Si todo está bien verás `✅ Conexión correcta`. Si falta algo, el script te 
 
 ## 6. Generar el reporte
 
+- **`npm run sync`**: descarga los casos de Notion y guarda **data/cases.json** (fuente de verdad local).
+- **`npm run build`**: lee **data/cases.json** y genera README.md, index.html y cases/*.html / cases/*.md.
+- **`npm run report`**: ejecuta sync y luego build (pipeline completo).
+
 ```bash
-npm run sync
+npm run report
 ```
 
 Se generan:
 
+- **data/cases.json**: datos crudos de Notion (para no depender de la API en cada build).
 - **README.md**: índice del reporte con tabla de casos (ideal para GitHub).
-- **index.html**: vista web con fichas por caso, badges de Status/Provider/Afectación y tiempo calculado (abierto hace X días / cerrado en X días / vence en X días). Ábrelo en el navegador para ver el reporte visual.
-- **cases/**: un archivo Markdown por caso, con todos los campos.
+- **index.html**: vista web con fichas por caso, badges de Status/Provider/Afectación y tiempo calculado. Ábrelo en el navegador para ver el reporte visual.
+- **cases/**: un HTML por caso (la página de detalle se construye desde el JSON).
 
 ## Orden del reporte
 
@@ -61,14 +66,14 @@ Los casos se ordenan para la presentación a externos así:
 2. **Afectación**: Critical 🔥 → High 🚨 → Normal → Low.
 3. **Fecha de creación**: más recientes primero.
 
-Si quieres otro orden, puedes editar `STATUS_ORDER` y `AFECTATION_ORDER` en `scripts/sync-from-notion.js`.
+Si quieres otro orden, edita `STATUS_ORDER` y `AFECTATION_ORDER` en **scripts/report-utils.js**.
 
 ## Subir a GitHub
 
-Después de `npm run sync`:
+Después de `npm run report` (o `npm run sync` + `npm run build`):
 
 ```bash
-git add README.md cases/
+git add data/ README.md index.html cases/
 git commit -m "Actualizar reporte de casos desde Notion"
 git push
 ```

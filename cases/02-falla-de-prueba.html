@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2. Falla de Prueba</title>
+  <link rel="stylesheet" href="../styles/report.css">
+</head>
+<body class="report-case">
+  <script>
+  (function(){var k='report-theme';var s=document.documentElement.getAttribute('data-theme')||localStorage.getItem(k)||(window.matchMedia&&window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',s);})();
+  </script>
+  <div class="container">
+    <div class="page-top">
+      <div class="back"><a href="../index.html">← Volver al reporte</a></div>
+      <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Cambiar modo claro u oscuro">Modo claro</button>
+    </div>
+    <div class="case-details">
+      <header class="case-hero">
+        <div class="case-hero-top">
+          <span class="case-num">Case #123456</span>
+          <span class="case-num">Ticket 123456</span>
+          
+          
+          <span class="badge" style="background:#ea580c">High 🚨</span>
+        </div>
+        <h1 class="case-title">Falla de Prueba</h1>
+        <div class="key-info">
+          <span class="key-info-item"><strong>Abierto hace 2 días</strong></span>
+          <span class="key-info-item">Creado: 2026-01-27</span>
+          <span class="key-info-item">Vence: 2026-01-07</span>
+          <span class="key-info-item"><span class="due-warning">Vencido</span></span>
+        </div>
+      </header>
+      <div class="props-grid">
+        <div class="prop-group"><h3 class="prop-group-title">Identificación</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">Internal Ticket</span><span class="prop-value">123456</span></div><div class="prop-row"><span class="prop-label">Case Number</span><span class="prop-value">123456</span></div></div></div>
+        <div class="prop-group"><h3 class="prop-group-title">Fechas</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">Created Date</span><span class="prop-value">2026-01-27</span></div><div class="prop-row"><span class="prop-label">Due Date</span><span class="prop-value">2026-01-07</span></div></div></div>
+        <div class="prop-group"><h3 class="prop-group-title">Clasificación</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">Failure Type</span><span class="prop-value">Activation Error</span></div><div class="prop-row"><span class="prop-label">Afectation</span><span class="prop-value">High 🚨</span></div></div></div>
+        
+        <div class="prop-group"><h3 class="prop-group-title">Otros</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">Case Name</span><span class="prop-value">Falla de Prueba</span></div></div></div>
+      </div>
+    </div>
+    <div class="case-body">
+      <div class="content-divider">Contenido del caso</div>
+      <div class="detail-row-2"><section class="detail-section"><h2 class="section-title">Resumen</h2><div class="detail-content"><p>Texto de ejmplo</p></div></section><section class="detail-section"><h2 class="section-title">Notas</h2><div class="detail-content"><p>Texto de ejmplo</p></div></section></div>
+      <section class="detail-section"><h2 class="section-title">Detalle del problema</h2><div class="detail-content"><p>Texto de ejmploTexto de ejmploTexto de ejmplo</p></div></section><section class="detail-section"><h2 class="section-title">Resolución</h2><div class="detail-content"><p>Texto de ejmploTexto de ejmploTexto de ejmploTexto de ejmploTexto de ejmploTexto de ejmplo</p></div></section>
+    </div>
+    <footer class="footer">
+      <a href="https://www.notion.so/Falla-de-Prueba-2f7e3293f4308074971bf5ef020f3be1" target="_blank" rel="noopener">Ver en Notion →</a><br>
+      FX NetOps Team 2026 · <a href="mailto:noc@fiberx.net">noc@fiberx.net</a> · <a href="https://fiberx.net" target="_blank" rel="noopener">fiberx.net</a>
+    </footer>
+  </div>
+  <script>
+  (function(){var k='report-theme';var b=document.getElementById('theme-toggle');if(!b)return;function u(){var s=document.documentElement.getAttribute('data-theme');b.textContent=s==='dark'?'Modo claro':'Modo oscuro';}u();b.addEventListener('click',function(){var s=document.documentElement.getAttribute('data-theme');s=s==='dark'?'light':'dark';localStorage.setItem(k,s);document.documentElement.setAttribute('data-theme',s);u();});})();
+  </script>
+</body>
+</html>

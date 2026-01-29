@@ -4,92 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Device Providers – Support Cases</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --surface: #1e293b;
-      --surface-hover: #334155;
-      --text: #f1f5f9;
-      --text-muted: #94a3b8;
-      --accent: #38bdf8;
-      --radius: 12px;
-      --shadow: 0 4px 20px rgba(0,0,0,.3);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      min-height: 100vh;
-    }
-    .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
-    header {
-      margin-bottom: 2rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--surface-hover);
-    }
-    header h1 { margin: 0 0 0.5rem; font-size: 1.75rem; font-weight: 700; }
-    header p { margin: 0; color: var(--text-muted); font-size: 0.95rem; }
-    .stats {
-      display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap;
-    }
-    .stats span { color: var(--text-muted); font-size: 0.9rem; }
-    .stats strong { color: var(--accent); }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 1.25rem;
-    }
-    .card {
-      background: var(--surface);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      transition: background 0.2s;
-    }
-    .card:hover { background: var(--surface-hover); }
-    .card-header { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; }
-    .card-num { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
-    .badges { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-    .badge {
-      font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 6px;
-      font-weight: 600; background: var(--badge-color, var(--surface-hover)); color: #fff;
-    }
-    .badge-provider { background: #6366f1; }
-    .card-title { margin: 0; font-size: 1rem; font-weight: 600; line-height: 1.35; }
-    .card-title a { color: inherit; text-decoration: none; }
-    .card-title a:hover { color: var(--accent); text-decoration: underline; }
-    .card-meta { font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 1rem; flex-wrap: wrap; }
-    .card-time { font-size: 0.85rem; }
-    .time-label { color: var(--accent); font-weight: 500; }
-    .time-sublabel { color: var(--text-muted); margin-left: 0.5rem; }
-    .card-actions { display: flex; gap: 0.5rem; margin-top: auto; padding-top: 0.5rem; }
-    .btn {
-      display: inline-block; padding: 0.4rem 0.75rem; border-radius: 8px;
-      font-size: 0.85rem; text-decoration: none; font-weight: 500;
-    }
-    .btn-secondary { background: var(--surface-hover); color: var(--text); }
-    .btn-secondary:hover { background: #475569; }
-    .btn-link { color: var(--accent); }
-    .btn-link:hover { text-decoration: underline; }
-    .footer { margin-top: 2rem; padding-top: 1rem; font-size: 0.85rem; color: var(--text-muted); }
-    .footer a { color: var(--accent); text-decoration: none; }
-    .footer a:hover { text-decoration: underline; }
-  </style>
+  <link rel="stylesheet" href="styles/report.css">
 </head>
-<body>
+<body class="report-index">
+  <script>
+  (function(){var k='report-theme';var s=document.documentElement.getAttribute('data-theme')||localStorage.getItem(k)||(window.matchMedia&&window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',s);})();
+  </script>
   <div class="container">
+    <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Cambiar modo claro u oscuro">Modo claro</button>
     <header>
       <h1>Device Providers – Support Cases</h1>
-      <p>Reporte generado desde Notion para presentación a personas externas.</p>
-      <div class="stats">
-        <span>Total: <strong>7</strong> casos</span>
-      </div>
+      <p>Reporte generado desde Notion (data/cases.json) para presentación a personas externas.</p>
+      <div class="stats"><span>Total: <strong>8</strong> casos</span></div>
     </header>
     <div class="grid">
 
@@ -99,33 +25,10 @@
         <div class="badges">
           
           
-          
-        </div>
-      </div>
-      <h2 class="card-title"><a href="cases/01-problema-sfp-xgs-gp-combo-sfpcolt-no-reconoce-las-onu-hx-xgs.md">problema SFP XGS-GP-COMBO-SFP+C+OLT no reconoce las onu HX-XGS-5302 y 5228XG</a></h2>
-      <div class="card-meta">
-        <span>Case <strong>252524</strong></span>
-        <span>2025-07-02</span>
-      </div>
-      <div class="card-time">
-        <span class="time-label">Abierto hace 211 días</span>
-        
-      </div>
-      <div class="card-actions">
-        <a href="cases/01-problema-sfp-xgs-gp-combo-sfpcolt-no-reconoce-las-onu-hx-xgs.md" class="btn btn-secondary">Ver detalle</a>
-        <a href="https://www.notion.so/problema-SFP-XGS-GP-COMBO-SFP-C-OLT-no-reconoce-las-onu-HX-XGS-5302-y-5228XG-2f7e3293f4308021837cf5424525a69f" target="_blank" rel="noopener" class="btn btn-link">Notion →</a>
-      </div>
-    </article>
-    <article class="card">
-      <div class="card-header">
-        <span class="card-num">#2</span>
-        <div class="badges">
-          
-          
           <span class="badge badge-afect" style="--badge-color:#dc2626">Critical 🔥</span>
         </div>
       </div>
-      <h2 class="card-title"><a href="cases/02-v1-16xc-activation-fail-during-provisioning-ont-model-2466gn.md">V1-16XC activation fail during provisioning ONT model 2466GN</a></h2>
+      <h2 class="card-title"><a href="cases/01-v1-16xc-activation-fail-during-provisioning-ont-model-2466gn.html">V1-16XC activation fail during provisioning ONT model 2466GN</a></h2>
       <div class="card-meta">
         <span>Case <strong>562894</strong></span>
         <span>2025-11-21</span>
@@ -135,8 +38,31 @@
         
       </div>
       <div class="card-actions">
-        <a href="cases/02-v1-16xc-activation-fail-during-provisioning-ont-model-2466gn.md" class="btn btn-secondary">Ver detalle</a>
+        <a href="cases/01-v1-16xc-activation-fail-during-provisioning-ont-model-2466gn.html" class="btn btn-secondary">Ver detalle</a>
         <a href="https://www.notion.so/V1-16XC-activation-fail-during-provisioning-ONT-model-2466GN-2f7e3293f430803e8316fca78660c90a" target="_blank" rel="noopener" class="btn btn-link">Notion →</a>
+      </div>
+    </article>
+    <article class="card">
+      <div class="card-header">
+        <span class="card-num">#2</span>
+        <div class="badges">
+          
+          
+          <span class="badge badge-afect" style="--badge-color:#ea580c">High 🚨</span>
+        </div>
+      </div>
+      <h2 class="card-title"><a href="cases/02-falla-de-prueba.html">Falla de Prueba</a></h2>
+      <div class="card-meta">
+        <span>Case <strong>123456</strong></span>
+        <span>2026-01-27</span>
+      </div>
+      <div class="card-time">
+        <span class="time-label">Abierto hace 2 días</span>
+        <span class="time-sublabel">Vencido hace 23 días</span>
+      </div>
+      <div class="card-actions">
+        <a href="cases/02-falla-de-prueba.html" class="btn btn-secondary">Ver detalle</a>
+        <a href="https://www.notion.so/Falla-de-Prueba-2f7e3293f4308074971bf5ef020f3be1" target="_blank" rel="noopener" class="btn btn-link">Notion →</a>
       </div>
     </article>
     <article class="card">
@@ -148,18 +74,18 @@
           <span class="badge badge-afect" style="--badge-color:#ea580c">High 🚨</span>
         </div>
       </div>
-      <h2 class="card-title"><a href="cases/03-falla-de-prueba.md">Falla de Prueba</a></h2>
+      <h2 class="card-title"><a href="cases/03-olt-mxk-f-108-presentando-intermitencia-escalado-winder.html">OLT MXK F-108 Presentando intermitencia escalado winder</a></h2>
       <div class="card-meta">
-        <span>Case <strong>123456</strong></span>
-        <span>2026-01-27</span>
+        <span>Case <strong>563394</strong></span>
+        <span>2026-01-20</span>
       </div>
       <div class="card-time">
-        <span class="time-label">Abierto hace 2 días</span>
-        <span class="time-sublabel">Vencido hace 23 días</span>
+        <span class="time-label">Abierto hace 9 días</span>
+        
       </div>
       <div class="card-actions">
-        <a href="cases/03-falla-de-prueba.md" class="btn btn-secondary">Ver detalle</a>
-        <a href="https://www.notion.so/Falla-de-Prueba-2f7e3293f4308074971bf5ef020f3be1" target="_blank" rel="noopener" class="btn btn-link">Notion →</a>
+        <a href="cases/03-olt-mxk-f-108-presentando-intermitencia-escalado-winder.html" class="btn btn-secondary">Ver detalle</a>
+        <a href="https://www.notion.so/OLT-MXK-F-108-Presentando-intermitencia-escalado-winder-2f7e3293f43080f498f2fde8faeb7f28" target="_blank" rel="noopener" class="btn btn-link">Notion →</a>
       </div>
     </article>
     <article class="card">
@@ -171,18 +97,18 @@
           <span class="badge badge-afect" style="--badge-color:#ea580c">High 🚨</span>
         </div>
       </div>
-      <h2 class="card-title"><a href="cases/04-olt-mxk-f-108-presentando-intermitencia-escalado-winder.md">OLT MXK F-108 Presentando intermitencia escalado winder</a></h2>
+      <h2 class="card-title"><a href="cases/04-falla-en-aprovisionamiento-de-onus-en-olt-v1-16xc-caso-escal.html">Falla en aprovisionamiento de ONUs en OLT V1-16XC caso escalado winder</a></h2>
       <div class="card-meta">
-        <span>Case <strong>563394</strong></span>
-        <span>2026-01-20</span>
+        <span>Case <strong>563339</strong></span>
+        <span>2026-01-16</span>
       </div>
       <div class="card-time">
-        <span class="time-label">Abierto hace 9 días</span>
+        <span class="time-label">Abierto hace 13 días</span>
         
       </div>
       <div class="card-actions">
-        <a href="cases/04-olt-mxk-f-108-presentando-intermitencia-escalado-winder.md" class="btn btn-secondary">Ver detalle</a>
-        <a href="https://www.notion.so/OLT-MXK-F-108-Presentando-intermitencia-escalado-winder-2f7e3293f43080f498f2fde8faeb7f28" target="_blank" rel="noopener" class="btn btn-link">Notion →</a>
+        <a href="cases/04-falla-en-aprovisionamiento-de-onus-en-olt-v1-16xc-caso-escal.html" class="btn btn-secondary">Ver detalle</a>
+        <a href="https://www.notion.so/Falla-en-aprovisionamiento-de-ONUs-en-OLT-V1-16XC-caso-escalado-winder-2f7e3293f430808aa3e7de998cf7f9ff" target="_blank" rel="noopener" class="btn btn-link">Notion →</a>
       </div>
     </article>
     <article class="card">
@@ -194,18 +120,18 @@
           <span class="badge badge-afect" style="--badge-color:#ea580c">High 🚨</span>
         </div>
       </div>
-      <h2 class="card-title"><a href="cases/05-falla-en-aprovisionamiento-de-onus-en-olt-v1-16xc-caso-escal.md">Falla en aprovisionamiento de ONUs en OLT V1-16XC caso escalado winder</a></h2>
+      <h2 class="card-title"><a href="cases/05-problema-sfp-xgs-gp-combo-sfpcolt-no-reconoce-las-onu-hx-xgs.html">problema SFP XGS-GP-COMBO-SFP+C+OLT no reconoce las onu HX-XGS-5302 y 5228XG</a></h2>
       <div class="card-meta">
-        <span>Case <strong>563339</strong></span>
-        <span>2026-01-16</span>
+        <span>Case <strong>252524</strong></span>
+        <span>2025-07-02</span>
       </div>
       <div class="card-time">
-        <span class="time-label">Abierto hace 13 días</span>
+        <span class="time-label">Abierto hace 211 días</span>
         
       </div>
       <div class="card-actions">
-        <a href="cases/05-falla-en-aprovisionamiento-de-onus-en-olt-v1-16xc-caso-escal.md" class="btn btn-secondary">Ver detalle</a>
-        <a href="https://www.notion.so/Falla-en-aprovisionamiento-de-ONUs-en-OLT-V1-16XC-caso-escalado-winder-2f7e3293f430808aa3e7de998cf7f9ff" target="_blank" rel="noopener" class="btn btn-link">Notion →</a>
+        <a href="cases/05-problema-sfp-xgs-gp-combo-sfpcolt-no-reconoce-las-onu-hx-xgs.html" class="btn btn-secondary">Ver detalle</a>
+        <a href="https://www.notion.so/problema-SFP-XGS-GP-COMBO-SFP-C-OLT-no-reconoce-las-onu-HX-XGS-5302-y-5228XG-2f7e3293f4308021837cf5424525a69f" target="_blank" rel="noopener" class="btn btn-link">Notion →</a>
       </div>
     </article>
     <article class="card">
@@ -217,7 +143,7 @@
           <span class="badge badge-afect" style="--badge-color:#6b7280">Normal</span>
         </div>
       </div>
-      <h2 class="card-title"><a href="cases/06-perdida-constaste-de-manejo-onu-2466gn-caso-escalado-winder.md">Perdida constaste de manejo ONU 2466GN caso escalado winder</a></h2>
+      <h2 class="card-title"><a href="cases/06-perdida-constaste-de-manejo-onu-2466gn-caso-escalado-winder.html">Perdida constaste de manejo ONU 2466GN caso escalado winder</a></h2>
       <div class="card-meta">
         <span>Case <strong>563338</strong></span>
         <span>2026-01-16</span>
@@ -227,7 +153,7 @@
         
       </div>
       <div class="card-actions">
-        <a href="cases/06-perdida-constaste-de-manejo-onu-2466gn-caso-escalado-winder.md" class="btn btn-secondary">Ver detalle</a>
+        <a href="cases/06-perdida-constaste-de-manejo-onu-2466gn-caso-escalado-winder.html" class="btn btn-secondary">Ver detalle</a>
         <a href="https://www.notion.so/Perdida-constaste-de-manejo-ONU-2466GN-caso-escalado-winder-2f7e3293f43080a2b85be37fa0f279eb" target="_blank" rel="noopener" class="btn btn-link">Notion →</a>
       </div>
     </article>
@@ -237,10 +163,33 @@
         <div class="badges">
           
           
+          <span class="badge badge-afect" style="--badge-color:#6b7280">Normal</span>
+        </div>
+      </div>
+      <h2 class="card-title"><a href="cases/07-problema-sfp-xgs-gp-combo-sfpcolt-no-reconoce-las-onu-hx-xgs.html">problema SFP XGS-GP-COMBO-SFP+C+OLT no reconoce las onu HX-XGS-5302 y 5228XG escalado Winder</a></h2>
+      <div class="card-meta">
+        <span>Case <strong>132099</strong></span>
+        <span>2025-07-02</span>
+      </div>
+      <div class="card-time">
+        <span class="time-label">Abierto hace 211 días</span>
+        
+      </div>
+      <div class="card-actions">
+        <a href="cases/07-problema-sfp-xgs-gp-combo-sfpcolt-no-reconoce-las-onu-hx-xgs.html" class="btn btn-secondary">Ver detalle</a>
+        <a href="https://www.notion.so/problema-SFP-XGS-GP-COMBO-SFP-C-OLT-no-reconoce-las-onu-HX-XGS-5302-y-5228XG-escalado-Winder-2f7e3293f43080f68628c0f2c8531751" target="_blank" rel="noopener" class="btn btn-link">Notion →</a>
+      </div>
+    </article>
+    <article class="card">
+      <div class="card-header">
+        <span class="card-num">#8</span>
+        <div class="badges">
+          
+          
           <span class="badge badge-afect" style="--badge-color:#22c55e">Low</span>
         </div>
       </div>
-      <h2 class="card-title"><a href="cases/07-onu-5302-provisioned-in-v1-16xc-xgspon-port-with-sfp-module-.md">ONU 5302 provisioned in V1-16XC xgspon port with sfp+ module XGS-GP-COMBO-SFP+ Hisense LTF5308B-BHB+ doesn't pass packets with MTU greater than 1500</a></h2>
+      <h2 class="card-title"><a href="cases/08-onu-5302-provisioned-in-v1-16xc-xgspon-port-with-sfp-module-.html">ONU 5302 provisioned in V1-16XC xgspon port with sfp+ module XGS-GP-COMBO-SFP+ Hisense LTF5308B-BHB+ doesn't pass packets with MTU greater than 1500</a></h2>
       <div class="card-meta">
         <span>Case <strong>562280</strong></span>
         <span>2025-09-05</span>
@@ -250,7 +199,7 @@
         <span class="time-sublabel">Vencido hace 88 días</span>
       </div>
       <div class="card-actions">
-        <a href="cases/07-onu-5302-provisioned-in-v1-16xc-xgspon-port-with-sfp-module-.md" class="btn btn-secondary">Ver detalle</a>
+        <a href="cases/08-onu-5302-provisioned-in-v1-16xc-xgspon-port-with-sfp-module-.html" class="btn btn-secondary">Ver detalle</a>
         <a href="https://www.notion.so/ONU-5302-provisioned-in-V1-16XC-xgspon-port-with-sfp-module-XGS-GP-COMBO-SFP-Hisense-LTF5308B-BHB--2f7e3293f430805d9cddc808205785b6" target="_blank" rel="noopener" class="btn btn-link">Notion →</a>
       </div>
     </article>
@@ -259,5 +208,8 @@
       FX NetOps Team 2026 · <a href="mailto:noc@fiberx.net">noc@fiberx.net</a> · <a href="https://fiberx.net" target="_blank" rel="noopener">fiberx.net</a>
     </footer>
   </div>
+  <script>
+  (function(){var k='report-theme';var b=document.getElementById('theme-toggle');if(!b)return;function u(){var s=document.documentElement.getAttribute('data-theme');b.textContent=s==='dark'?'Modo claro':'Modo oscuro';}u();b.addEventListener('click',function(){var s=document.documentElement.getAttribute('data-theme');s=s==='dark'?'light':'dark';localStorage.setItem(k,s);document.documentElement.setAttribute('data-theme',s);u();});})();
+  </script>
 </body>
 </html>
