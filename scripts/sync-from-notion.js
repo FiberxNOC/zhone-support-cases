@@ -373,7 +373,7 @@ function buildReadme(cases) {
     "",
     "---",
     "",
-    "*Generado con `npm run sync`. Para regenerar: ver [SETUP.md](SETUP.md).*",
+    "*FX NetOps Team 2026 · [noc@fiberx.net](mailto:noc@fiberx.net) · [fiberx.net](https://fiberx.net)*",
     ""
   );
   return lines.join("\n");
@@ -537,7 +537,7 @@ function buildHtml(cases) {
 ${cardsHtml}
     </div>
     <footer class="footer">
-      Product of FX NetOps Team 2026 · <a href="mailto:noc@fiberx.net">noc@fiberx.net</a> · <a href="https://fiberx.net" target="_blank" rel="noopener">fiberx.net</a>
+      FX NetOps Team 2026 · <a href="mailto:noc@fiberx.net">noc@fiberx.net</a> · <a href="https://fiberx.net" target="_blank" rel="noopener">fiberx.net</a>
     </footer>
   </div>
 </body>
