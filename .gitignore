@@ -3,3 +3,4 @@ node_modules/
 .DS_Store
 *.log
 _debug*.txt
+report.pdf

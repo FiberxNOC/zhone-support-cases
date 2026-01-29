@@ -144,30 +144,65 @@ async function parsePageSections(blocks) {
   return sections;
 }
 
+/** Extrae un valor legible de cualquier tipo de propiedad de Notion (para traer todas las props). */
 function getPropValue(p) {
   if (!p) return null;
   if (p.title) return p.title.map((t) => t.plain_text).join("") || null;
   if (p.rich_text) return p.rich_text.map((t) => t.plain_text).join("") || null;
-  if (p.number !== undefined) return p.number;
+  if (p.number !== undefined && typeof p.number === "number") return p.number;
+  if (p.number !== undefined && p.number != null && typeof p.number === "object" && "format" in p.number) return null;
   if (p.select) return p.select.name ?? null;
+  if (p.status) return p.status.name ?? null;
   if (p.date?.start) return { start: p.date.start, end: p.date.end };
   if (p.multi_select?.length) return p.multi_select.map((s) => s.name);
   if (p.files?.length) return p.files.map((f) => f.name || f.file?.url).filter(Boolean);
+  if (p.formula) {
+    const f = p.formula;
+    if (f.string != null) return f.string;
+    if (f.number != null) return f.number;
+    if (f.boolean != null) return String(f.boolean);
+    if (f.date?.start) return { start: f.date.start, end: f.date.end };
+  }
+  if (p.url) return p.url;
+  if (p.email) return p.email;
+  if (p.phone_number) return p.phone_number;
+  if (p.checkbox !== undefined) return p.checkbox;
+  if (p.created_time) return p.created_time;
+  if (p.last_edited_time) return p.last_edited_time;
+  if (p.created_by) return p.created_by.name ?? p.created_by.id ?? null;
+  if (p.last_edited_by) return p.last_edited_by.name ?? p.last_edited_by.id ?? null;
+  if (p.people?.length) return p.people.map((u) => u.name ?? u.id).filter(Boolean).join(", ");
+  if (p.relation?.length) return p.relation.map((r) => r.id).join(", ");
+  if (p.rollup) {
+    const r = p.rollup;
+    if (r.type === "number" && r.number != null) return r.number;
+    if (r.type === "date" && r.date?.start) return r.date.start;
+    if (r.type === "array" && r.array?.length) {
+      return r.array.map((i) => i.title?.map((t) => t.plain_text).join("") ?? i.rich_text?.map((t) => t.plain_text).join("") ?? i.name ?? i.id).filter(Boolean).join(", ");
+    }
+    if (r.type === "incomplete" || r.type === "unsupported") return null;
+  }
+  if (p.unique_id) {
+    const u = p.unique_id;
+    return u.prefix ? `${u.prefix}-${u.number}` : String(u.number);
+  }
+  if (p.verification) return p.verification.state ?? null;
   return null;
 }
 
-/** Todas las propiedades de la página usando los nombres del esquema de la base. */
+/** Todas las propiedades de la página usando los nombres del esquema de la base (trae todas las props de Notion). */
 function getAllPropsFromSchema(db, page) {
   const out = {};
   const schema = db.properties || {};
   const props = page.properties || {};
   for (const [propId, propSchema] of Object.entries(schema)) {
     const name = propSchema.name;
-    const raw = props[propId] ?? props[name];
+    const raw = props[propId] ?? props[propSchema.id] ?? props[name];
     const value = getPropValue(raw);
     if (value != null) {
-      if (typeof value === "object" && value.start) out[name] = value.start;
+      if (typeof value === "object" && !Array.isArray(value) && value.start) out[name] = value.start;
       else if (Array.isArray(value)) out[name] = value.join(", ");
+      else if (typeof value === "boolean") out[name] = value ? "Yes" : "No";
       else out[name] = value;
     }
   }
@@ -188,6 +223,18 @@ function getProp(page, nameOrAliases) {
   return null;
 }
 
+/** Primer valor no vacío de allProps cuya clave coincida con algún patrón (ej. /status/i). */
+function getPropByKeyMatch(allProps, ...patterns) {
+  if (!allProps || typeof allProps !== "object") return null;
+  for (const pattern of patterns) {
+    const re = typeof pattern === "string" ? new RegExp(pattern, "i") : pattern;
+    for (const [key, value] of Object.entries(allProps)) {
+      if (re.test(key) && value != null && String(value).trim() !== "") return value;
+    }
+  }
+  return null;
+}
+
 function parsePage(page, db) {
   const allProps = db ? getAllPropsFromSchema(db, page) : {};
   const caseName =
@@ -203,17 +250,25 @@ function parsePage(page, db) {
   const dueStr =
     due && typeof due === "object" && due.start ? due.start : typeof due === "string" ? due : null;
   const caseNumber = allProps["Case Number"] ?? getProp(page, ["Case Number"]);
-  const status = allProps["Status"] ?? getProp(page, ["Status"]);
+  const status =
+    allProps["Status"] ?? getProp(page, ["Status"]) ?? getPropByKeyMatch(allProps, "status", "estado");
   const afectation =
     allProps["Affectation"] ?? allProps["Afectation"] ?? getProp(page, ["Affectation", "Afectation"]);
+
+  const platform =
+    allProps["Platform"] ?? allProps["Patform"] ?? getProp(page, ["Platform", "Patform"]) ?? getPropByKeyMatch(allProps, "platform", "plataforma");
+  const model =
+    allProps["Model"] ?? getProp(page, ["Model"]) ?? getPropByKeyMatch(allProps, "model", "modelo");
+  const firmwareVersion =
+    allProps["Firmware Version"] ?? allProps["Firmware"] ?? allProps["FW"] ?? getProp(page, ["Firmware Version", "Firmware", "FW"]) ?? getPropByKeyMatch(allProps, "firmware", "fw", "version");
 
   return {
     id: page.id,
     caseName: String(caseName),
     allProps,
-    provider: allProps["Provider"] ?? getProp(page, ["Provider"]),
+    provider: allProps["Provider"] ?? getProp(page, ["Provider"]) ?? getPropByKeyMatch(allProps, "provider"),
     caseNumber: caseNumber != null ? String(caseNumber) : null,
-    status: status ?? getProp(page, ["Status"]),
+    status: status ?? null,
     createdDate: createdStr,
     dueDate: dueStr,
     failureType: allProps["Failure Type"] ?? getProp(page, ["Failure Type"]),
@@ -221,9 +276,9 @@ function parsePage(page, db) {
     internalTicket: allProps["Internal Ticket"] ?? getProp(page, ["Internal Ticket"]),
     device: allProps["Device"] ?? getProp(page, ["Device"]),
     serialNumber: allProps["Serial Number"] ?? getProp(page, ["Serial Number"]),
-    model: allProps["Model"] ?? getProp(page, ["Model"]),
-    firmwareVersion: allProps["Firmware Version"] ?? getProp(page, ["Firmware Version"]),
-    platform: allProps["Platform"] ?? allProps["Patform"] ?? getProp(page, ["Platform", "Patform"]),
+    model: model ?? null,
+    firmwareVersion: firmwareVersion != null ? String(firmwareVersion) : null,
+    platform: platform ?? null,
     notionUrl: page.url,
     lastEditedTime: page.last_edited_time || null,
   };

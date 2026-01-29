@@ -8,10 +8,10 @@ import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import {
   sortCases,
+  getCaseFilename,
   buildReadme,
   buildCaseDetailHtml,
   buildIndexHtml,
-  slug,
 } from "./report-utils.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -40,10 +40,11 @@ async function main() {
   const sorted = sortCases(cases);
   await mkdir(CASES_DIR, { recursive: true });
 
-  // Conjunto de archivos que vamos a generar (evita duplicados de ejecuciones anteriores)
-  const currentFiles = new Set(
-    sorted.map((c, i) => `${String(i + 1).padStart(2, "0")}-${slug(c.caseName)}.html`)
-  );
+  // Nombres por Case Number (ej. 562894.html); si no hay o hay duplicado → case-01.html, case-02.html
+  const used = new Set();
+  const filenames = sorted.map((c, i) => getCaseFilename(c, i, used));
+  const currentFiles = new Set(filenames);
+
   try {
     const existing = await readdir(CASES_DIR);
     for (const name of existing) {
@@ -56,13 +57,12 @@ async function main() {
 
   for (let i = 0; i < sorted.length; i++) {
     const c = sorted[i];
-    const baseName = `${String(i + 1).padStart(2, "0")}-${slug(c.caseName)}`;
-    await writeFile(join(CASES_DIR, `${baseName}.html`), buildCaseDetailHtml(c, i + 1), "utf8");
-    console.log("  ", baseName + ".html");
+    await writeFile(join(CASES_DIR, filenames[i]), buildCaseDetailHtml(c, i + 1), "utf8");
+    console.log("  ", filenames[i]);
   }
 
-  await writeFile(join(ROOT, "README.md"), buildReadme(sorted), "utf8");
-  await writeFile(join(ROOT, "index.html"), buildIndexHtml(sorted), "utf8");
+  await writeFile(join(ROOT, "README.md"), buildReadme(sorted, filenames), "utf8");
+  await writeFile(join(ROOT, "index.html"), buildIndexHtml(sorted, filenames), "utf8");
   console.log("README.md e index.html actualizados.");
   console.log(`\nListo: ${sorted.length} casos. Abre index.html para ver el reporte.`);
 }

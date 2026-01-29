@@ -7,12 +7,16 @@
     "check": "node scripts/check-notion.js",
     "sync": "node scripts/sync-from-notion.js",
     "build": "node scripts/build-report.js",
-    "report": "npm run sync && npm run build"
+    "report": "npm run sync && npm run build",
+    "pdf": "node scripts/build-pdf-report.js"
   },
   "keywords": ["notion", "support-cases", "report"],
   "license": "MIT",
   "dependencies": {
     "@notionhq/client": "^2.2.15",
     "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "puppeteer": "^23.0.0"
   }
 }
