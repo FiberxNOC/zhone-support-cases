@@ -23,6 +23,7 @@ npm run check
 | `npm run build` | Genera `REPORT.md`, `index.html` y `cases/*.html` desde los datos |
 | `npm run report` | Ejecuta sync y luego build |
 | `npm run pdf` | Genera `report.pdf` (portada, índice, resumen y todos los casos) |
+| `npm run serve` | Servidor local (por defecto http://localhost:3000); en la página hay un botón **Generar PDF** que descarga el reporte |
 | `npm run verify` | Valida `data/cases.json`; con `--build` también ejecuta build y comprueba salida |
 | `npm run test` | Igual que `verify --build` |
 

@@ -9,6 +9,7 @@
     "build": "node scripts/build-report.js",
     "report": "npm run sync && npm run build",
     "pdf": "node scripts/build-pdf-report.js",
+    "serve": "node scripts/serve.js",
     "verify": "node scripts/verify.js",
     "test": "node scripts/verify.js --build"
   },
@@ -20,7 +21,8 @@
   "license": "MIT",
   "dependencies": {
     "@notionhq/client": "^2.2.15",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0"
   },
   "devDependencies": {
     "pdf-lib": "^1.17.1",
