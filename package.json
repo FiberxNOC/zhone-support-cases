@@ -8,15 +8,22 @@
     "sync": "node scripts/sync-from-notion.js",
     "build": "node scripts/build-report.js",
     "report": "npm run sync && npm run build",
-    "pdf": "node scripts/build-pdf-report.js"
+    "pdf": "node scripts/build-pdf-report.js",
+    "verify": "node scripts/verify.js",
+    "test": "node scripts/verify.js --build"
   },
-  "keywords": ["notion", "support-cases", "report"],
+  "keywords": [
+    "notion",
+    "support-cases",
+    "report"
+  ],
   "license": "MIT",
   "dependencies": {
     "@notionhq/client": "^2.2.15",
     "dotenv": "^16.4.5"
   },
   "devDependencies": {
+    "pdf-lib": "^1.17.1",
     "puppeteer": "^23.0.0"
   }
 }

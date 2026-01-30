@@ -47,7 +47,7 @@ Para que en las tarjetas y filtros aparezcan **Status**, **Platform**, **Model**
 
 ## 6. Generar el reporte
 
-- **`npm run sync`**: descarga los casos de Notion y guarda **data/cases.json** (fuente de verdad local).
+- **`npm run sync`**: descarga los casos de Notion y guarda **data/cases.json** (fuente de verdad local). Por defecto procesa varios casos en paralelo para ir más rápido. Si Notion devuelve errores de límite de tasa, prueba `SYNC_CONCURRENCY=2 npm run sync`.
 - **`npm run build`**: lee **data/cases.json** y genera README.md, index.html y cases/*.html.
 - **`npm run report`**: ejecuta sync y luego build (pipeline completo).
 - **`npm run pdf`**: genera **report.pdf** (índice + todos los casos) para adjuntar en un email. Requiere tener data/cases.json y `npm install` con puppeteer.
@@ -71,7 +71,21 @@ Para obtener un único PDF con el reporte completo (índice + todos los casos) y
 npm run pdf
 ```
 
-Se genera **report.pdf** en la raíz del proyecto. La primera vez que ejecutes `npm run pdf` se instalará Puppeteer (Chrome headless) si no está instalado.
+Se genera **report.pdf** en la raíz del proyecto. La primera vez que ejecutes `npm run pdf`, Puppeteer descargará su propio **Chromium** (incluido en el paquete npm). **No se usa tu navegador** (da igual que uses Firefox, Safari, Edge, etc.): el PDF se genera con un Chromium headless que instala Puppeteer, independiente del navegador que tengas por defecto.
+
+Por defecto **la portada y la página del índice no llevan pie de página** (se tapa con un rectángulo blanco). El resto del documento sí lleva pie. Los enlaces del índice (a cada caso y al resumen) deberían funcionar. Si en tu entorno los enlaces dejan de funcionar, prueba `ENABLE_FOOTER_COVER=0 npm run pdf` para no tapar el pie (el footer se verá en todas las páginas).
+
+### Comprobar que todo funciona
+
+Para validar que **data/cases.json** es correcto y que el build genera los archivos esperados:
+
+```bash
+npm run verify          # Solo valida data/cases.json
+npm run verify -- --build   # Valida JSON, ejecuta build y comprueba index.html y cases/*.html
+npm run test            # Igual que verify --build (prueba completa)
+```
+
+Si algo falla (JSON inválido, casos sin `lastEditedTime`, archivos de caso faltantes u obsoletos), el script indica el error y termina con código 1.
 
 ## Orden del reporte
 

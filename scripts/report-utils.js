@@ -59,6 +59,92 @@ function sortCases(cases) {
   });
 }
 
+/** Nombres posibles de propiedades en Notion → nuestra clave interna (platform, model, fw).
+ * Si en Notion la prop se llama distinto (ej. "Model." con punto), añadirla aquí. */
+const NOTION_PROP_ALIASES = {
+  platform: ["Platform", "Patform", "Plataforma"],
+  model: ["Model", "Model.", "Modelo"],
+  fw: ["Firmware Version", "Firmware", "FW"],
+};
+
+/** Devuelve el primer valor no vacío de allProps para una de las claves alias.
+ * Compara claves normalizadas (trim + lowercase) para encontrar la prop aunque en Notion se llame "Platform ", "Model.", "Plataforma", etc. */
+function getFromAllPropsByAliases(allProps, ...internalKeys) {
+  if (!allProps || typeof allProps !== "object") return null;
+  const norm = (s) => String(s ?? "").trim().toLowerCase();
+  for (const key of internalKeys) {
+    const aliases = NOTION_PROP_ALIASES[key];
+    if (!aliases) continue;
+    for (const [propKey, value] of Object.entries(allProps)) {
+      if (value == null || String(value).trim() === "") continue;
+      const propNorm = norm(propKey);
+      for (const alias of aliases) {
+        if (propNorm === norm(alias)) return String(value).trim();
+      }
+    }
+  }
+  return null;
+}
+
+/** Obtiene el primer valor de allProps cuya clave coincida con algún patrón.
+ * Coincide: igual (case insensitive) o clave que empiece por patrón + espacio (ej. "Firmware Version" con patrón "firmware"). */
+function getFromAllProps(allProps, ...keyPatterns) {
+  if (!allProps || typeof allProps !== "object") return null;
+  for (const pattern of keyPatterns) {
+    const p = typeof pattern === "string" ? String(pattern).toLowerCase().trim() : null;
+    if (!p) continue;
+    for (const [key, value] of Object.entries(allProps)) {
+      if (value == null || String(value).trim() === "") continue;
+      const k = String(key ?? "").trim().toLowerCase();
+      if (!k) continue;
+      const match = k === p || k.startsWith(p + " ");
+      if (match) return String(value).trim();
+    }
+  }
+  return null;
+}
+
+/** Infiere model, platform y firmwareVersion desde nombre del caso y texto cuando Notion no los tiene. */
+function inferDeviceInfo(c) {
+  const text = [c.caseName, c.resumen, c.notas, c.detalleDelProblema].filter(Boolean).join("\n");
+  if (!text) return { model: null, platform: null, firmwareVersion: null };
+
+  const modelPatterns = [
+    /\b(?:ONT|ONU)\s+model\s+(\S+)/i,
+    /\b(?:ONT|ONU)\s+(\d{4}[A-Z0-9-]*)/i,
+    /\b(2466GN|5302|5228XG)\b/i,
+    /\b(MXK-F108|MXK-F-108)\b/i,
+    /\b(LTF5308B-BHB\+|LTF5308B-BCA\+|XGS-GP-COMBO-SFP\+?)\b/i,
+    /\bmodel\s+(\S+)/i,
+  ];
+  const platformPatterns = [
+    /\b(V1-16XC|v1-16xc)\b/i,
+    /\b(MXK-F108|MXK-F-108|MXK\s*F-?108)\b/i,
+    /\bOLT\s+(V1-16XC|MXK[^\s]*)/i,
+  ];
+  const fwPatterns = [
+    /\b(S7\.0\.\d{3})\b/i,
+    /\b(7\.0\.\d{3})\b/,
+    /\b(0?70\d{4})\b/,
+    /\b(MXK\s+[\d.]+(?:\.[\d.]+)*)\b/i,
+    /\b(?:sw load|firmware|version)\s*[:\s]+(\S+)/i,
+  ];
+
+  const firstMatch = (str, patterns) => {
+    for (const re of patterns) {
+      const m = str.match(re);
+      if (m && m[1]) return m[1].trim();
+    }
+    return null;
+  };
+
+  return {
+    model: firstMatch(text, modelPatterns),
+    platform: firstMatch(text, platformPatterns),
+    firmwareVersion: firstMatch(text, fwPatterns),
+  };
+}
+
 function computeTimeInfo(c) {
   const now = new Date();
   const created = c.createdDate ? new Date(c.createdDate) : null;
@@ -96,12 +182,52 @@ function escapeHtml(str) {
     .replace(/"/g, "&quot;");
 }
 
+/** Convierte un segmento de texto (sin ''' código ''') en HTML: párrafos y citas (> ). */
+function textSegmentToHtml(segment) {
+  if (!segment || !segment.trim()) return "";
+  const blocks = segment.trim().split(/\n\n+/).map((b) => b.trim()).filter(Boolean);
+  return blocks
+    .map((block) => {
+      const lines = block.split("\n");
+      const allQuoted = lines.every((line) => /^\s*>/.test(line));
+      if (allQuoted && lines.length >= 1) {
+        const quotedHtml = lines
+          .map((line) => escapeHtml(line.replace(/^\s*>\s?/, "").trim()))
+          .filter((s) => s)
+          .join("<br>");
+        if (quotedHtml) return `<blockquote class="detail-quote">${quotedHtml}</blockquote>`;
+      }
+      return `<p>${escapeHtml(block).replace(/\n/g, "<br>")}</p>`;
+    })
+    .join("");
+}
+
+/** Formatea texto plano a HTML. Código solo con marcado explícito: ''' código '''. Resto: párrafos y citas (> ). */
 function textToHtml(str) {
   if (!str || !String(str).trim()) return "";
-  return String(str)
-    .split(/\n\n+/)
-    .map((p) => `<p>${escapeHtml(p.trim()).replace(/\n/g, "<br>")}</p>`)
-    .join("");
+  const s = String(str).trim();
+  const out = [];
+  let rest = s;
+  while (rest.length > 0) {
+    const open = rest.indexOf("'''");
+    if (open === -1) {
+      out.push(textSegmentToHtml(rest));
+      break;
+    }
+    if (open > 0) {
+      out.push(textSegmentToHtml(rest.slice(0, open)));
+    }
+    rest = rest.slice(open + 3);
+    const close = rest.indexOf("'''");
+    if (close === -1) {
+      out.push(textSegmentToHtml(rest));
+      break;
+    }
+    const code = rest.slice(0, close).trim();
+    out.push(`<pre class="detail-code">${escapeHtml(code)}</pre>`);
+    rest = rest.slice(close + 3);
+  }
+  return out.join("");
 }
 
 function groupProps(allProps) {
@@ -120,10 +246,46 @@ function groupProps(allProps) {
     if (["Case Number", "Internal Ticket"].includes(name)) id.push(row);
     else if (["Created Date", "Due Date"].includes(name)) fechas.push(row);
     else if (["Afectation", "Affectation", "Failure Type", "Provider"].includes(name)) clasif.push(row);
-    else if (["Device", "Model", "Serial Number", "Firmware Version", "Platform", "Patform"].includes(name)) dispositivo.push(row);
+    else if (["Device", "Model", "Model.", "Modelo", "Serial Number", "Firmware Version", "Firmware", "FirmwareVersion", "FW", "Platform", "Patform", "Plataforma"].includes(name)) dispositivo.push(row);
     else otros.push(row);
   }
   return { id, fechas, clasif, dispositivo, otros };
+}
+
+/** Props del caso para PDF: cortos (hasta 4 por fila), largos en fila completa. */
+function buildPdfPropsTable(allProps) {
+  if (!allProps || typeof allProps !== "object") return "";
+  const SHORT_LEN = 38;
+  const COLS = 4;
+  const items = [];
+  for (const [name, value] of Object.entries(allProps)) {
+    if (value == null || !String(value).trim()) continue;
+    if (!name || !String(name).trim()) continue;
+    if (name === "Case Name" || name === "Status") continue;
+    const valStr = String(value).trim();
+    const short = valStr.length <= SHORT_LEN && !valStr.includes("\n");
+    items.push({ name: escapeHtml(name), value: escapeHtml(valStr).replace(/\n/g, "<br>"), short });
+  }
+  if (items.length === 0) return "";
+  const rows = [];
+  let row = [];
+  for (const item of items) {
+    if (item.short && row.length < COLS) {
+      row.push(`<td class="props-cell">${item.name}: ${item.value}</td>`);
+      continue;
+    }
+    if (row.length) {
+      rows.push(`<tr>${row.join("")}</tr>`);
+      row = [];
+    }
+    if (item.short) {
+      row.push(`<td class="props-cell">${item.name}: ${item.value}</td>`);
+    } else {
+      rows.push(`<tr><td class="props-cell props-cell-full" colspan="${COLS}">${item.name}: ${item.value}</td></tr>`);
+    }
+  }
+  if (row.length) rows.push(`<tr>${row.concat(Array(COLS - row.length).fill("<td class=\"props-cell\"></td>")).join("")}</tr>`);
+  return `<table class="props-table"><tbody>${rows.join("")}</tbody></table>`;
 }
 
 function caseToMarkdown(c, index) {
@@ -167,7 +329,7 @@ function buildReadme(cases, filenames = null) {
     const link = `[${c.caseName.slice(0, 50)}${c.caseName.length > 50 ? "…" : ""}](cases/${filename})`;
     lines.push(`| ${i + 1} | ${link} | ${c.provider || "—"} | ${c.caseNumber || "—"} | ${c.status || "—"} | ${c.afectation || "—"} | ${c.createdDate || "—"} |`);
   });
-  lines.push("", "---", "", "*FiberX NetOps Team · [noc@fiberx.net](mailto:noc@fiberx.net) · [fiberx.net](https://fiberx.net) · 2026*", "");
+  lines.push("", "---", "", "*FiberX NetOps Team · 2026*", "");
   return lines.join("\n");
 }
 
@@ -250,7 +412,7 @@ function buildCaseDetailHtml(c, index) {
     <div class="footer-wrap">
       <footer class="footer">
         <a href="${escapeHtml(c.notionUrl)}" target="_blank" rel="noopener">Ver en Notion →</a><br>
-        FiberX NetOps Team · <a href="mailto:noc@fiberx.net">noc@fiberx.net</a> · <a href="https://fiberx.net" target="_blank" rel="noopener">fiberx.net</a> · 2026
+        FiberX NetOps Team · 2026
       </footer>
     </div>
   </div>
@@ -282,9 +444,20 @@ function buildIndexHtml(cases, filenames = null) {
     return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
   });
   const providers = [...new Set(cases.map((c) => c.provider).filter(Boolean))].sort();
-  const platforms = [...new Set(cases.map((c) => c.platform).filter(Boolean))].sort();
-  const models = [...new Set(cases.map((c) => c.model).filter(Boolean))].sort();
-  const firmwares = [...new Set(cases.map((c) => c.firmwareVersion).filter(Boolean))].sort();
+  /* Misma lógica para TODOS los casos (nada hardcodeado por título/ID).
+   * Prioridad: 1) allProps (alias normalizados) 2) getFromAllProps (patrones) 3) c.platform/model/firmwareVersion del sync.
+   * Si en Notion no existen o están vacías Platform/Model/FW, se usa lo que guardó el sync (a veces inferido del texto). */
+  const resolved = cases.map((c) => {
+    const allProps = c.allProps || {};
+    return {
+      platform: getFromAllPropsByAliases(allProps, "platform") ?? getFromAllProps(allProps, "platform", "patform", "plataforma") ?? (c.platform ?? ""),
+      model: getFromAllPropsByAliases(allProps, "model") ?? getFromAllProps(allProps, "model", "modelo") ?? (c.model ?? ""),
+      fw: getFromAllPropsByAliases(allProps, "fw") ?? getFromAllProps(allProps, "firmware version", "firmware", "fw") ?? (c.firmwareVersion ?? ""),
+    };
+  });
+  const platforms = [...new Set(resolved.map((r) => r.platform).filter(Boolean))].sort();
+  const models = [...new Set(resolved.map((r) => r.model).filter(Boolean))].sort();
+  const firmwares = [...new Set(resolved.map((r) => r.fw).filter(Boolean))].sort();
   const filterStatusOptions = statuses.map((s) => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
   const filterAfectOptions = afectations.map((a) => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join("");
   const filterProviderOptions = providers.map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
@@ -297,9 +470,9 @@ function buildIndexHtml(cases, filenames = null) {
     const statusColor = statusColors[c.status] || "#6b7280";
     const statusIsOpen = ["In progress", "Not started", "Escalated to Engineering", "Escalated to En..."].includes(c.status);
     const afectColor = afectacionColors[c.afectation] || "#6b7280";
-    const platform = c.platform || "";
-    const model = c.model || "";
-    const fw = c.firmwareVersion || "";
+    const platform = resolved[i].platform;
+    const model = resolved[i].model;
+    const fw = resolved[i].fw;
     const statusVal = c.status || "";
     const spec = (propKey, label, value) => `<span class="card-spec-item" data-card-prop="${escapeHtml(propKey)}"><span class="card-spec-label">${escapeHtml(label)}</span><span class="card-spec-value${value ? "" : " card-spec-empty"}">${value ? escapeHtml(String(value)) : "—"}</span></span>`;
     return `
@@ -437,7 +610,7 @@ ${cardsHtml}
     </main>
     <div class="footer-wrap">
       <footer class="footer">
-        FiberX NetOps Team · <a href="mailto:noc@fiberx.net">noc@fiberx.net</a> · <a href="https://gofiberx.com" target="_blank" rel="noopener">gofiberx.com</a> · 2026
+        FiberX NetOps Team · 2026
       </footer>
     </div>
   </div>
@@ -514,9 +687,77 @@ ${cardsHtml}
 </html>`;
 }
 
-/** HTML completo para exportar a PDF (un solo documento con índice + todos los casos) */
-function buildPdfHtml(cases) {
+/** Lista de IDs para el índice del PDF (para calcular números de página en dos pasadas). sub = true para filas hijas. */
+function getTocEntryIds(cases) {
+  const ids = [{ id: "toc-resumen", label: "Resumen de casos", sub: false }];
+  cases.forEach((c, i) => {
+    const n = i + 1;
+    ids.push({ id: `case-${n}`, label: `${n}. ${c.caseName.length > 55 ? c.caseName.slice(0, 55) + "…" : c.caseName}`, sub: false });
+    ids.push({ id: `case-${n}-details`, label: "Detalles generales", sub: true });
+    ids.push({ id: `case-${n}-summary`, label: "Summary", sub: true });
+    ids.push({ id: `case-${n}-problem`, label: "Problem detail", sub: true });
+    ids.push({ id: `case-${n}-resolution`, label: "Resolution", sub: true });
+    ids.push({ id: `case-${n}-notes`, label: "Comments / Notes", sub: true });
+  });
+  return ids;
+}
+
+/** HTML de la portada del PDF: logo izquierda, línea encima del título, título grande, disclaimer al final centrado y ancho. */
+function buildPdfCoverHtml(cases, logoDataUrl = "") {
+  const logoImg = logoDataUrl ? `<img src="${logoDataUrl}" alt="FiberX" class="cover-logo" width="240" height="74" />` : "";
+  return `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>Device Providers – Support Cases</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: "Inter", sans-serif; margin: 0; padding: 2rem 2rem 2.2rem 2rem; min-height: 100vh; }
+    .pdf-cover { display: flex; flex-direction: column; width: 100%; min-height: 100%; }
+    .cover-header { flex-shrink: 0; margin-bottom: 0.5rem; }
+    .cover-logo-wrap { display: flex; justify-content: flex-start; }
+    .cover-logo { display: block; }
+    .cover-main { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem 0; }
+    .cover-title-block { display: flex; flex-direction: column; align-items: flex-start; text-align: left; max-width: 520px; margin-top: 5rem; }
+    .cover-line { height: 4px; width: 240px; max-width: 50%; background: #2563eb; border: none; margin: 0 0 1rem; border-radius: 2px; flex-shrink: 0; align-self: flex-start; }
+    .cover-title { font-family: "Outfit", sans-serif; font-size: 42px; font-weight: 700; margin: 0 0 0.5rem; color: #111; line-height: 1.2; }
+    .cover-subtitle { font-size: 14px; color: #555; margin: 0; letter-spacing: 0.05em; text-transform: uppercase; }
+    .cover-footer { margin-top: auto; flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; width: 100%; padding-top: 1rem; }
+    .cover-footer .cover-spacer { flex: 1; min-height: 4rem; }
+    .cover-footer .cover-disclaimer-wrap { flex-shrink: 0; width: 100%; display: flex; justify-content: center; padding-bottom: 0.8rem; }
+    .cover-disclaimer { font-size: 9px; color: #666; line-height: 1.45; text-align: center; width: 100%; max-width: 520px; margin: 0; padding: 0.75rem 1rem 1.2rem; border: 1px solid #ddd; background: #f9f9f9; }
+  </style>
+</head>
+<body>
+  <section class="pdf-cover">
+    <div class="cover-header">
+      <div class="cover-logo-wrap">${logoImg}</div>
+    </div>
+    <div class="cover-main">
+      <div class="cover-title-block">
+        <hr class="cover-line" aria-hidden="true">
+        <h1 class="cover-title">Device Providers – Support Cases</h1>
+        <p class="cover-subtitle">Reporte de casos</p>
+      </div>
+    </div>
+    <div class="cover-footer">
+      <div class="cover-spacer" aria-hidden="true"></div>
+      <div class="cover-disclaimer-wrap">
+        <p class="cover-disclaimer">Este documento contiene información confidencial de FiberX y está destinado únicamente a los destinatarios autorizados. Su distribución, reproducción o uso no autorizado está prohibida. La información aquí incluida no puede ser divulgada a terceros sin autorización previa por escrito.</p>
+      </div>
+    </div>
+  </section>
+</body>
+</html>`;
+}
+
+/** Introducción / alcance del documento (Summary / Scope). Editable para ajustar el texto. */
+const PDF_DOC_SCOPE =
+  "Este documento es un reporte de casos de soporte de Device Providers, generado a partir de la base de datos del equipo de soporte de FiberX, y muestra el estado de todos los casos abiertos y cerrados. El objetivo es generar visibilidad del estado de cada caso y permitir acceder al detalle completo (resumen, problema, resolución y notas).";
+
+/** HTML del cuerpo del PDF: índice (con números de página), resumen y casos. tocPageNumbers = { id: número de página final } */
+function buildPdfBodyHtml(cases, tocPageNumbers = {}) {
   const dateStr = new Date().toLocaleDateString("es", { day: "2-digit", month: "long", year: "numeric" });
+  const reportDateStr = new Date().toLocaleDateString("es", { month: "long", year: "numeric" });
   const tableRows = cases
     .map(
       (c, i) =>
@@ -524,24 +765,29 @@ function buildPdfHtml(cases) {
     )
     .join("");
 
+  const tocEntries = getTocEntryIds(cases);
+  const tocRows = tocEntries
+    .map((e) => {
+      const page = tocPageNumbers[e.id] != null ? String(tocPageNumbers[e.id]) : "—";
+      const rowClass = e.sub ? "toc-sub" : "";
+      return `<tr class="${rowClass}"><td class="toc-label"><a href="#${escapeHtml(e.id)}" class="toc-link">${escapeHtml(e.label)}</a></td><td class="toc-page">${page}</td></tr>`;
+    })
+    .join("");
+
   const caseSections = cases
     .map((c, i) => {
+      const n = i + 1;
       const time = computeTimeInfo(c);
-      const propsRows =
-        c.allProps &&
-        Object.entries(c.allProps)
-          .filter(([, v]) => v != null && String(v).trim())
-          .map(([name, value]) => `<tr><td class="prop-name">${escapeHtml(name)}</td><td>${escapeHtml(String(value)).replace(/\n/g, "<br>")}</td></tr>`)
-          .join("");
-      const resumen = c.resumen ? `<div class="block"><h3>Summary</h3>${textToHtml(c.resumen)}</div>` : "";
-      const notas = c.notas ? `<div class="block"><h3>Notes</h3>${textToHtml(c.notas)}</div>` : "";
-      const detalle = c.detalleDelProblema ? `<div class="block"><h3>Problem detail</h3>${textToHtml(c.detalleDelProblema)}</div>` : "";
-      const resolucion = c.resolucion ? `<div class="block"><h3>Resolution</h3>${textToHtml(c.resolucion)}</div>` : "";
+      const propsTable = buildPdfPropsTable(c.allProps);
+      const resumen = c.resumen ? `<div id="case-${n}-summary" class="block"><h3>Summary</h3>${textToHtml(c.resumen)}</div>` : `<div id="case-${n}-summary" class="block"></div>`;
+      const notas = c.notas ? `<div id="case-${n}-notes" class="block"><h3>Comments / Notes</h3>${textToHtml(c.notas)}</div>` : `<div id="case-${n}-notes" class="block"></div>`;
+      const detalle = c.detalleDelProblema ? `<div id="case-${n}-problem" class="block"><h3>Problem detail</h3>${textToHtml(c.detalleDelProblema)}</div>` : `<div id="case-${n}-problem" class="block"></div>`;
+      const resolucion = c.resolucion ? `<div id="case-${n}-resolution" class="block"><h3>Resolution</h3>${textToHtml(c.resolucion)}</div>` : `<div id="case-${n}-resolution" class="block"></div>`;
       return `
-  <section class="case-section">
-    <h2>${i + 1}. ${escapeHtml(c.caseName)}</h2>
+  <section class="case-section" id="case-${n}">
+    <h2>${n}. ${escapeHtml(c.caseName)}</h2>
     <p class="case-meta">${c.caseNumber ? `Case #${escapeHtml(c.caseNumber)}` : ""} ${c.internalTicket ? ` · Ticket ${escapeHtml(c.internalTicket)}` : ""} · ${escapeHtml(c.status || "")} · ${escapeHtml(c.afectation || "")} · ${time.label ? escapeHtml(time.label) : ""} · Created: ${escapeHtml(c.createdDate || "—")}${c.dueDate ? ` · Due: ${escapeHtml(c.dueDate)}` : ""}</p>
-    ${propsRows ? `<table class="props-table"><tbody>${propsRows}</tbody></table>` : ""}
+    <div id="case-${n}-details" class="case-details">${propsTable}</div>
     ${resumen}${notas}${detalle}${resolucion}
   </section>`;
     })
@@ -552,37 +798,122 @@ function buildPdfHtml(cases) {
 <head>
   <meta charset="UTF-8">
   <title>Device Providers – Support Cases</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
-    body { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; line-height: 1.4; color: #111; margin: 0; padding: 1.5cm; }
-    h1 { font-size: 18px; margin: 0 0 0.5em; }
-    h2 { font-size: 14px; margin: 1.2em 0 0.4em; page-break-after: avoid; }
-    h3 { font-size: 11px; margin: 0.8em 0 0.3em; color: #333; page-break-after: avoid; }
-    p { margin: 0 0 0.5em; }
-    .report-date { color: #555; margin-bottom: 1em; }
-    table { width: 100%; border-collapse: collapse; margin: 0.5em 0; font-size: 10px; page-break-inside: avoid; }
-    th, td { border: 1px solid #ccc; padding: 4px 6px; text-align: left; }
+    body { font-family: "Inter", system-ui, sans-serif; font-size: 11px; line-height: 1.4; color: #111; margin: 0; padding: 0.6cm; }
+    h1 { font-family: "Outfit", sans-serif; font-size: 22px; font-weight: 600; margin: 0 0 0.5em; }
+    h2 { font-family: "Outfit", sans-serif; font-size: 20px; font-weight: 600; margin: 1em 0 0.35em; page-break-after: avoid; }
+    h3 { font-family: "Outfit", "Inter", sans-serif; font-size: 11px; font-weight: 600; margin: 0.75em 0 0.4em; color: #111; page-break-after: avoid; text-transform: uppercase; letter-spacing: 0.04em; }
+    .block h3 { font-family: "Outfit", "Inter", sans-serif; font-size: 11px; font-weight: 600; margin: 0 0 0.4em; color: #111; text-transform: uppercase; letter-spacing: 0.04em; }
+    p { margin: 0 0 0.45em; }
+    .report-date { color: #555; margin-top: 0.6em; margin-bottom: 0; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; margin: 0.4em 0; font-size: 10px; page-break-inside: avoid; }
+    table.resumen-table { font-size: 9px; }
+    table.resumen-table td:nth-child(7), table.resumen-table th:nth-child(7) { white-space: nowrap; }
+    th, td { border: 1px solid #ccc; padding: 3px 5px; text-align: left; }
     th { background: #f0f0f0; font-weight: 600; }
+    #toc-resumen { page-break-after: always; }
+    .doc-summary { margin-bottom: 1em; page-break-inside: avoid; }
+    .doc-summary p { margin: 0 0 0.5em; line-height: 1.45; font-size: 11px; color: #111; }
+    .doc-summary p:last-child { margin-bottom: 0; }
     .case-section { page-break-before: always; }
-    .case-section:first-of-type { page-break-before: auto; }
-    .case-meta { color: #555; font-size: 10px; margin-bottom: 0.6em; }
-    .props-table .prop-name { font-weight: 500; color: #444; width: 35%; }
-    .block { margin-bottom: 1em; page-break-inside: avoid; }
-    .block p { margin-bottom: 0.4em; }
-    .footer { margin-top: 2em; padding-top: 0.5em; font-size: 9px; color: #666; border-top: 1px solid #ddd; }
+    .case-section:first-of-type { page-break-before: always; }
+    .case-meta { color: #555; font-size: 10px; margin-bottom: 0.5em; }
+    .case-section .case-details { margin-bottom: 1.2em; }
+    .props-table { font-size: 9px; table-layout: fixed; }
+    .props-table .props-cell { padding: 2px 6px; border: 1px solid #e0e0e0; vertical-align: top; word-break: break-word; }
+    .props-table .props-cell-full { width: 100%; }
+    .block { margin-bottom: 0.8em; page-break-inside: avoid; }
+    .block p { margin-bottom: 0.35em; }
+    .detail-code, pre.detail-code { font-family: ui-monospace, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace; font-size: 9px; line-height: 1.4; margin: 0.4em 0; padding: 0.5em 0.6em; background: #f5f5f5; border: 1px solid #ddd; border-left: 3px solid #2563eb; border-radius: 4px; overflow-x: auto; white-space: pre; color: #111; page-break-inside: avoid; }
+    .footer { margin-top: 1.5em; padding-top: 0.4em; font-size: 9px; color: #666; border-top: 1px solid #ddd; }
+    .pdf-toc-wrap { page-break-after: always; page-break-inside: avoid; margin: 0; padding: 0; }
+    .pdf-toc .toc-table { width: 100%; border-collapse: collapse; font-size: 10px; line-height: 1.25; }
+    .pdf-toc .toc-table caption { font-family: "Outfit", sans-serif; font-size: 22px; font-weight: 600; text-align: left; margin: 0 0 0.4rem; padding-bottom: 0.35rem; border-bottom: 2px solid #111; caption-side: top; }
+    .pdf-toc .toc-table td { padding: 0.08em 0.5em 0.08em 0; vertical-align: top; border: none; }
+    .pdf-toc .toc-label { width: 85%; }
+    .pdf-toc .toc-page { width: 15%; text-align: right; color: #555; }
+    .pdf-toc .toc-link { color: #111; text-decoration: none; }
+    .pdf-toc .toc-link:hover { text-decoration: underline; }
+    .pdf-toc tr.toc-sub td.toc-label { padding-left: 3.5em; padding-top: 0.18em; padding-bottom: 0.18em; font-size: 9px; color: #444; }
+    .pdf-toc tr.toc-sub td.toc-page { padding-top: 0.18em; padding-bottom: 0.18em; }
   </style>
 </head>
 <body>
-  <h1>Device Providers – Support Cases</h1>
-  <p class="report-date">Reporte generado el ${dateStr}. Total: ${cases.length} casos.</p>
-  <table>
-    <thead><tr><th>#</th><th>Case Name</th><th>Case #</th><th>Provider</th><th>Status</th><th>Affectation</th><th>Created</th></tr></thead>
-    <tbody>${tableRows}</tbody>
-  </table>
+  <div class="pdf-toc-wrap" id="toc">
+    <section class="pdf-toc">
+      <table class="toc-table"><caption>Índice</caption><tbody>${tocRows}</tbody></table>
+    </section>
+  </div>
+  <div id="toc-resumen">
+    <h1 style="margin-top: 0;">Resumen de casos</h1>
+    <div class="doc-summary">
+      <p>${escapeHtml(PDF_DOC_SCOPE)}</p>
+    </div>
+    <table class="resumen-table">
+      <thead><tr><th>#</th><th>Case Name</th><th>Case #</th><th>Provider</th><th>Status</th><th>Affectation</th><th>Created</th></tr></thead>
+      <tbody>${tableRows}</tbody>
+    </table>
+    <p class="report-date">Reporte generado en ${reportDateStr}. Total: ${cases.length} casos.</p>
+  </div>
   ${caseSections}
-  <div class="footer">FiberX NetOps Team · noc@fiberx.net · fiberx.net · 2026</div>
+  <div class="footer">FiberX NetOps Team · 2026</div>
 </body>
 </html>`;
 }
 
-export { slug, sortCases, computeTimeInfo, getCaseFilename, buildReadme, buildCaseDetailHtml, buildIndexHtml, buildPdfHtml, caseToMarkdown };
+/** Devuelve el HTML de un único documento PDF (portada + cuerpo) para que los enlaces del índice funcionen. */
+function buildPdfFullHtml(cases, logoDataUrl, tocPageNumbers = {}) {
+  const coverHtml = buildPdfCoverHtml(cases, logoDataUrl);
+  const bodyHtml = buildPdfBodyHtml(cases, tocPageNumbers);
+  const coverBody = coverHtml.replace(/^[\s\S]*?<body[^>]*>/i, "").replace(/<\/body>[\s\S]*$/i, "").trim();
+  const bodyBody = bodyHtml.replace(/^[\s\S]*?<body[^>]*>/i, "").replace(/<\/body>[\s\S]*$/i, "").trim();
+  const coverStyles = coverHtml.match(/<style>([\s\S]*?)<\/style>/)?.[1] ?? "";
+  const bodyStyles = bodyHtml.match(/<style>([\s\S]*?)<\/style>/)?.[1] ?? "";
+  return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Device Providers – Support Cases</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 0; }
+    ${coverStyles}
+    .pdf-cover { page-break-after: always; padding: 2rem 2rem 0 2rem; min-height: 100vh; box-sizing: border-box; }
+    .pdf-body-wrap { padding: 0.6cm; }
+    ${bodyStyles}
+    body { padding: 0 !important; }
+  </style>
+</head>
+<body>
+${coverBody}
+<div class="pdf-body-wrap">
+${bodyBody}
+</div>
+</body>
+</html>`;
+}
+
+/** HTML completo para exportar a PDF (portada + cuerpo en un solo documento); para compatibilidad. */
+function buildPdfHtml(cases, options = {}) {
+  const bodyHtml = buildPdfBodyHtml(cases, options.tocPageNumbers || {});
+  const logoDataUrl = options.logoDataUrl || "";
+  const dateStr = new Date().toLocaleDateString("es", { day: "2-digit", month: "long", year: "numeric" });
+  const logoImg = logoDataUrl ? `<img src="${logoDataUrl}" alt="FiberX" class="cover-logo" width="180" height="55" style="margin-bottom:1.5rem" />` : "";
+  const coverSection = `
+  <div class="pdf-cover-wrap" style="position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:2rem;page-break-after:always">
+    <section class="pdf-cover">
+      ${logoImg}
+      <h1 style="font-family:Outfit,sans-serif;font-size:28px;font-weight:600;margin:0 0 0.5rem;color:#111">Device Providers – Support Cases</h1>
+      <p style="font-size:14px;color:#555;margin:0 0 2rem;letter-spacing:0.05em;text-transform:uppercase">Reporte de casos · Release notes</p>
+      <p style="font-size:12px;color:#666;margin:0 0 0.5rem">${dateStr}</p>
+      <p style="font-size:11px;color:#888;margin:0 0 1.5rem">Total: ${cases.length} casos</p>
+      <p style="font-size:9px;color:#666;max-width:480px;line-height:1.45;margin:0;padding:0.75rem 1rem;border:1px solid #ddd;background:#f9f9f9">Este documento contiene información confidencial de FiberX y está destinado únicamente a los destinatarios autorizados. Su distribución, reproducción o uso no autorizado está prohibida. La información aquí incluida no puede ser divulgada a terceros sin autorización previa por escrito.</p>
+    </section>
+  </div>`;
+  return bodyHtml.replace("<body>", "<body>" + coverSection);
+}
+
+export { slug, sortCases, computeTimeInfo, getCaseFilename, buildReadme, buildCaseDetailHtml, buildIndexHtml, buildPdfHtml, buildPdfCoverHtml, buildPdfBodyHtml, buildPdfFullHtml, getTocEntryIds, caseToMarkdown };

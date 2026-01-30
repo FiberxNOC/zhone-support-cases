@@ -23,7 +23,7 @@
     <header>
       <h1>Device Providers – Support Cases</h1>
       <p>Reporte generado desde Notion (data/cases.json) para presentación a personas externas.</p>
-      <div class="stats"><span>Total: <strong>10</strong> casos</span><span id="filter-count" class="filter-count"></span></div>
+      <div class="stats"><span>Total: <strong>11</strong> casos</span><span id="filter-count" class="filter-count"></span></div>
     </header>
     <div class="toolbar-row">
     <div class="filters-wrap">
@@ -37,7 +37,7 @@
           <div class="filter-group">
             <label for="filter-status"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Estado</label>
             <select id="filter-status" class="filter-select" aria-label="Filtrar por estado">
-              <option value="">Todos</option><option value="In progress">In progress</option><option value="Escalated to Engineering">Escalated to Engineering</option><option value="Fix Scheduled">Fix Scheduled</option><option value="Done">Done</option><option value="Archived">Archived</option>
+              <option value="">Todos</option><option value="Not started">Not started</option><option value="In progress">In progress</option><option value="Escalated to Engineering">Escalated to Engineering</option><option value="Fix Scheduled">Fix Scheduled</option><option value="Done">Done</option><option value="Archived">Archived</option>
             </select>
           </div>
           <div class="filter-group">
@@ -55,19 +55,19 @@
           <div class="filter-group">
             <label for="filter-platform"><i class="fa-solid fa-server" aria-hidden="true"></i> Platform</label>
             <select id="filter-platform" class="filter-select" aria-label="Filtrar por platform">
-              <option value="">Todas</option>
+              <option value="">Todas</option><option value="MXK F-108">MXK F-108</option><option value="MXK-F108">MXK-F108</option><option value="V1-16XC">V1-16XC</option>
             </select>
           </div>
           <div class="filter-group">
             <label for="filter-model"><i class="fa-solid fa-cube" aria-hidden="true"></i> Model</label>
             <select id="filter-model" class="filter-select" aria-label="Filtrar por model">
-              <option value="">Todos</option>
+              <option value="">Todos</option><option value="2466GN">2466GN</option><option value="5302">5302</option><option value="MXK-F108">MXK-F108</option>
             </select>
           </div>
           <div class="filter-group">
             <label for="filter-firmware"><i class="fa-solid fa-code-branch" aria-hidden="true"></i> FW</label>
             <select id="filter-firmware" class="filter-select" aria-label="Filtrar por firmware">
-              <option value="">Todas</option>
+              <option value="">Todas</option><option value="S7.0.068">S7.0.068</option><option value="S7.0.081">S7.0.081</option>
             </select>
           </div>
           <button type="button" id="filter-clear" class="btn btn-filter-clear" aria-label="Quitar todos los filtros">
@@ -125,7 +125,7 @@
         <a href="cases/113525.html" class="btn btn-secondary">Ver detalle</a>
       </div>
     </article>
-    <article class="card" data-status="Archived" data-afectation="Normal" data-provider="" data-platform="" data-model="" data-firmware="" style="--card-accent:#6b7280">
+    <article class="card" data-status="Archived" data-afectation="Normal" data-provider="" data-platform="" data-model="5302" data-firmware="" style="--card-accent:#6b7280">
       <div class="card-header">
         <div class="badges" data-card-prop="badges">
           <span class="badge badge-status status-badge--done" style="--badge-color:#6b7280"><span class="status-dot" aria-hidden="true"></span>Archived</span>
@@ -141,7 +141,7 @@
       <div class="card-specs">
         <span class="card-spec-item" data-card-prop="status"><span class="card-spec-label">Status</span><span class="card-spec-value">Archived</span></span>
         <span class="card-spec-item" data-card-prop="platform"><span class="card-spec-label">Platform</span><span class="card-spec-value card-spec-empty">—</span></span>
-        <span class="card-spec-item" data-card-prop="model"><span class="card-spec-label">Model</span><span class="card-spec-value card-spec-empty">—</span></span>
+        <span class="card-spec-item" data-card-prop="model"><span class="card-spec-label">Model</span><span class="card-spec-value">5302</span></span>
         <span class="card-spec-item" data-card-prop="firmware"><span class="card-spec-label">FW</span><span class="card-spec-value card-spec-empty">—</span></span>
       </div>
       <div class="card-time" data-card-prop="time">
@@ -152,7 +152,34 @@
         <a href="cases/132099.html" class="btn btn-secondary">Ver detalle</a>
       </div>
     </article>
-    <article class="card" data-status="In progress" data-afectation="Critical 🔥" data-provider="" data-platform="" data-model="" data-firmware="" style="--card-accent:#2563eb">
+    <article class="card" data-status="Not started" data-afectation="High 🚨" data-provider="" data-platform="" data-model="" data-firmware="" style="--card-accent:#94a3b8">
+      <div class="card-header">
+        <div class="badges" data-card-prop="badges">
+          <span class="badge badge-status status-badge--open" style="--badge-color:#94a3b8"><span class="status-dot" aria-hidden="true"></span>Not started</span>
+          
+          <span class="badge badge-afect" style="--badge-color:#64748b">High 🚨</span>
+        </div>
+      </div>
+      <h2 class="card-title"><a href="cases/123456.html" title="Falla de Prueba">Falla de Prueba</a></h2>
+      <div class="card-meta" data-card-prop="cardMeta">
+        <span>Case <strong>123456</strong></span>
+        <span>2026-01-27</span>
+      </div>
+      <div class="card-specs">
+        <span class="card-spec-item" data-card-prop="status"><span class="card-spec-label">Status</span><span class="card-spec-value">Not started</span></span>
+        <span class="card-spec-item" data-card-prop="platform"><span class="card-spec-label">Platform</span><span class="card-spec-value card-spec-empty">—</span></span>
+        <span class="card-spec-item" data-card-prop="model"><span class="card-spec-label">Model</span><span class="card-spec-value card-spec-empty">—</span></span>
+        <span class="card-spec-item" data-card-prop="firmware"><span class="card-spec-label">FW</span><span class="card-spec-value card-spec-empty">—</span></span>
+      </div>
+      <div class="card-time" data-card-prop="time">
+        <span class="time-label">Open for 2 days</span>
+        <span class="time-sublabel">Overdue by 23 days</span>
+      </div>
+      <div class="card-actions" data-card-prop="actions">
+        <a href="cases/123456.html" class="btn btn-secondary">Ver detalle</a>
+      </div>
+    </article>
+    <article class="card" data-status="In progress" data-afectation="Critical 🔥" data-provider="" data-platform="V1-16XC" data-model="2466GN" data-firmware="S7.0.081" style="--card-accent:#2563eb">
       <div class="card-header">
         <div class="badges" data-card-prop="badges">
           <span class="badge badge-status status-badge--open" style="--badge-color:#2563eb"><span class="status-dot" aria-hidden="true"></span>In progress</span>
@@ -167,9 +194,9 @@
       </div>
       <div class="card-specs">
         <span class="card-spec-item" data-card-prop="status"><span class="card-spec-label">Status</span><span class="card-spec-value">In progress</span></span>
-        <span class="card-spec-item" data-card-prop="platform"><span class="card-spec-label">Platform</span><span class="card-spec-value card-spec-empty">—</span></span>
-        <span class="card-spec-item" data-card-prop="model"><span class="card-spec-label">Model</span><span class="card-spec-value card-spec-empty">—</span></span>
-        <span class="card-spec-item" data-card-prop="firmware"><span class="card-spec-label">FW</span><span class="card-spec-value card-spec-empty">—</span></span>
+        <span class="card-spec-item" data-card-prop="platform"><span class="card-spec-label">Platform</span><span class="card-spec-value">V1-16XC</span></span>
+        <span class="card-spec-item" data-card-prop="model"><span class="card-spec-label">Model</span><span class="card-spec-value">2466GN</span></span>
+        <span class="card-spec-item" data-card-prop="firmware"><span class="card-spec-label">FW</span><span class="card-spec-value">S7.0.081</span></span>
       </div>
       <div class="card-time" data-card-prop="time">
         <span class="time-label">Open for 69 days</span>
@@ -179,7 +206,7 @@
         <a href="cases/562894.html" class="btn btn-secondary">Ver detalle</a>
       </div>
     </article>
-    <article class="card" data-status="In progress" data-afectation="Normal" data-provider="" data-platform="" data-model="" data-firmware="" style="--card-accent:#2563eb">
+    <article class="card" data-status="In progress" data-afectation="Normal" data-provider="" data-platform="" data-model="2466GN" data-firmware="" style="--card-accent:#2563eb">
       <div class="card-header">
         <div class="badges" data-card-prop="badges">
           <span class="badge badge-status status-badge--open" style="--badge-color:#2563eb"><span class="status-dot" aria-hidden="true"></span>In progress</span>
@@ -195,7 +222,7 @@
       <div class="card-specs">
         <span class="card-spec-item" data-card-prop="status"><span class="card-spec-label">Status</span><span class="card-spec-value">In progress</span></span>
         <span class="card-spec-item" data-card-prop="platform"><span class="card-spec-label">Platform</span><span class="card-spec-value card-spec-empty">—</span></span>
-        <span class="card-spec-item" data-card-prop="model"><span class="card-spec-label">Model</span><span class="card-spec-value card-spec-empty">—</span></span>
+        <span class="card-spec-item" data-card-prop="model"><span class="card-spec-label">Model</span><span class="card-spec-value">2466GN</span></span>
         <span class="card-spec-item" data-card-prop="firmware"><span class="card-spec-label">FW</span><span class="card-spec-value card-spec-empty">—</span></span>
       </div>
       <div class="card-time" data-card-prop="time">
@@ -206,7 +233,7 @@
         <a href="cases/563338.html" class="btn btn-secondary">Ver detalle</a>
       </div>
     </article>
-    <article class="card" data-status="Escalated to Engineering" data-afectation="High 🚨" data-provider="" data-platform="" data-model="" data-firmware="" style="--card-accent:#64748b">
+    <article class="card" data-status="Escalated to Engineering" data-afectation="High 🚨" data-provider="" data-platform="V1-16XC" data-model="" data-firmware="" style="--card-accent:#64748b">
       <div class="card-header">
         <div class="badges" data-card-prop="badges">
           <span class="badge badge-status status-badge--open" style="--badge-color:#64748b"><span class="status-dot" aria-hidden="true"></span>Escalated to Engineering</span>
@@ -221,7 +248,7 @@
       </div>
       <div class="card-specs">
         <span class="card-spec-item" data-card-prop="status"><span class="card-spec-label">Status</span><span class="card-spec-value">Escalated to Engineering</span></span>
-        <span class="card-spec-item" data-card-prop="platform"><span class="card-spec-label">Platform</span><span class="card-spec-value card-spec-empty">—</span></span>
+        <span class="card-spec-item" data-card-prop="platform"><span class="card-spec-label">Platform</span><span class="card-spec-value">V1-16XC</span></span>
         <span class="card-spec-item" data-card-prop="model"><span class="card-spec-label">Model</span><span class="card-spec-value card-spec-empty">—</span></span>
         <span class="card-spec-item" data-card-prop="firmware"><span class="card-spec-label">FW</span><span class="card-spec-value card-spec-empty">—</span></span>
       </div>
@@ -233,7 +260,7 @@
         <a href="cases/563339.html" class="btn btn-secondary">Ver detalle</a>
       </div>
     </article>
-    <article class="card" data-status="Fix Scheduled" data-afectation="High 🚨" data-provider="" data-platform="" data-model="" data-firmware="" style="--card-accent:#94a3b8">
+    <article class="card" data-status="Fix Scheduled" data-afectation="High 🚨" data-provider="" data-platform="MXK F-108" data-model="" data-firmware="" style="--card-accent:#94a3b8">
       <div class="card-header">
         <div class="badges" data-card-prop="badges">
           <span class="badge badge-status status-badge--done" style="--badge-color:#94a3b8"><span class="status-dot" aria-hidden="true"></span>Fix Scheduled</span>
@@ -248,7 +275,7 @@
       </div>
       <div class="card-specs">
         <span class="card-spec-item" data-card-prop="status"><span class="card-spec-label">Status</span><span class="card-spec-value">Fix Scheduled</span></span>
-        <span class="card-spec-item" data-card-prop="platform"><span class="card-spec-label">Platform</span><span class="card-spec-value card-spec-empty">—</span></span>
+        <span class="card-spec-item" data-card-prop="platform"><span class="card-spec-label">Platform</span><span class="card-spec-value">MXK F-108</span></span>
         <span class="card-spec-item" data-card-prop="model"><span class="card-spec-label">Model</span><span class="card-spec-value card-spec-empty">—</span></span>
         <span class="card-spec-item" data-card-prop="firmware"><span class="card-spec-label">FW</span><span class="card-spec-value card-spec-empty">—</span></span>
       </div>
@@ -260,7 +287,7 @@
         <a href="cases/563394.html" class="btn btn-secondary">Ver detalle</a>
       </div>
     </article>
-    <article class="card" data-status="Fix Scheduled" data-afectation="High 🚨" data-provider="" data-platform="" data-model="" data-firmware="" style="--card-accent:#94a3b8">
+    <article class="card" data-status="Fix Scheduled" data-afectation="High 🚨" data-provider="" data-platform="MXK-F108" data-model="MXK-F108" data-firmware="" style="--card-accent:#94a3b8">
       <div class="card-header">
         <div class="badges" data-card-prop="badges">
           <span class="badge badge-status status-badge--done" style="--badge-color:#94a3b8"><span class="status-dot" aria-hidden="true"></span>Fix Scheduled</span>
@@ -275,8 +302,8 @@
       </div>
       <div class="card-specs">
         <span class="card-spec-item" data-card-prop="status"><span class="card-spec-label">Status</span><span class="card-spec-value">Fix Scheduled</span></span>
-        <span class="card-spec-item" data-card-prop="platform"><span class="card-spec-label">Platform</span><span class="card-spec-value card-spec-empty">—</span></span>
-        <span class="card-spec-item" data-card-prop="model"><span class="card-spec-label">Model</span><span class="card-spec-value card-spec-empty">—</span></span>
+        <span class="card-spec-item" data-card-prop="platform"><span class="card-spec-label">Platform</span><span class="card-spec-value">MXK-F108</span></span>
+        <span class="card-spec-item" data-card-prop="model"><span class="card-spec-label">Model</span><span class="card-spec-value">MXK-F108</span></span>
         <span class="card-spec-item" data-card-prop="firmware"><span class="card-spec-label">FW</span><span class="card-spec-value card-spec-empty">—</span></span>
       </div>
       <div class="card-time" data-card-prop="time">
@@ -287,7 +314,7 @@
         <a href="cases/252524.html" class="btn btn-secondary">Ver detalle</a>
       </div>
     </article>
-    <article class="card" data-status="Done" data-afectation="High 🚨" data-provider="" data-platform="" data-model="" data-firmware="" style="--card-accent:#64748b">
+    <article class="card" data-status="Done" data-afectation="High 🚨" data-provider="" data-platform="MXK F-108" data-model="2466GN" data-firmware="S7.0.068" style="--card-accent:#64748b">
       <div class="card-header">
         <div class="badges" data-card-prop="badges">
           <span class="badge badge-status status-badge--done" style="--badge-color:#64748b"><span class="status-dot" aria-hidden="true"></span>Done</span>
@@ -302,9 +329,9 @@
       </div>
       <div class="card-specs">
         <span class="card-spec-item" data-card-prop="status"><span class="card-spec-label">Status</span><span class="card-spec-value">Done</span></span>
-        <span class="card-spec-item" data-card-prop="platform"><span class="card-spec-label">Platform</span><span class="card-spec-value card-spec-empty">—</span></span>
-        <span class="card-spec-item" data-card-prop="model"><span class="card-spec-label">Model</span><span class="card-spec-value card-spec-empty">—</span></span>
-        <span class="card-spec-item" data-card-prop="firmware"><span class="card-spec-label">FW</span><span class="card-spec-value card-spec-empty">—</span></span>
+        <span class="card-spec-item" data-card-prop="platform"><span class="card-spec-label">Platform</span><span class="card-spec-value">MXK F-108</span></span>
+        <span class="card-spec-item" data-card-prop="model"><span class="card-spec-label">Model</span><span class="card-spec-value">2466GN</span></span>
+        <span class="card-spec-item" data-card-prop="firmware"><span class="card-spec-label">FW</span><span class="card-spec-value">S7.0.068</span></span>
       </div>
       <div class="card-time" data-card-prop="time">
         <span class="time-label">Closed in 238 days</span>
@@ -314,7 +341,7 @@
         <a href="cases/113987.html" class="btn btn-secondary">Ver detalle</a>
       </div>
     </article>
-    <article class="card" data-status="Done" data-afectation="Normal" data-provider="" data-platform="" data-model="" data-firmware="" style="--card-accent:#64748b">
+    <article class="card" data-status="Done" data-afectation="Normal" data-provider="" data-platform="V1-16XC" data-model="" data-firmware="" style="--card-accent:#64748b">
       <div class="card-header">
         <div class="badges" data-card-prop="badges">
           <span class="badge badge-status status-badge--done" style="--badge-color:#64748b"><span class="status-dot" aria-hidden="true"></span>Done</span>
@@ -329,7 +356,7 @@
       </div>
       <div class="card-specs">
         <span class="card-spec-item" data-card-prop="status"><span class="card-spec-label">Status</span><span class="card-spec-value">Done</span></span>
-        <span class="card-spec-item" data-card-prop="platform"><span class="card-spec-label">Platform</span><span class="card-spec-value card-spec-empty">—</span></span>
+        <span class="card-spec-item" data-card-prop="platform"><span class="card-spec-label">Platform</span><span class="card-spec-value">V1-16XC</span></span>
         <span class="card-spec-item" data-card-prop="model"><span class="card-spec-label">Model</span><span class="card-spec-value card-spec-empty">—</span></span>
         <span class="card-spec-item" data-card-prop="firmware"><span class="card-spec-label">FW</span><span class="card-spec-value card-spec-empty">—</span></span>
       </div>
@@ -341,7 +368,7 @@
         <a href="cases/113333.html" class="btn btn-secondary">Ver detalle</a>
       </div>
     </article>
-    <article class="card" data-status="Done" data-afectation="Low" data-provider="" data-platform="" data-model="" data-firmware="" style="--card-accent:#64748b">
+    <article class="card" data-status="Done" data-afectation="Low" data-provider="" data-platform="V1-16XC" data-model="5302" data-firmware="" style="--card-accent:#64748b">
       <div class="card-header">
         <div class="badges" data-card-prop="badges">
           <span class="badge badge-status status-badge--done" style="--badge-color:#64748b"><span class="status-dot" aria-hidden="true"></span>Done</span>
@@ -356,8 +383,8 @@
       </div>
       <div class="card-specs">
         <span class="card-spec-item" data-card-prop="status"><span class="card-spec-label">Status</span><span class="card-spec-value">Done</span></span>
-        <span class="card-spec-item" data-card-prop="platform"><span class="card-spec-label">Platform</span><span class="card-spec-value card-spec-empty">—</span></span>
-        <span class="card-spec-item" data-card-prop="model"><span class="card-spec-label">Model</span><span class="card-spec-value card-spec-empty">—</span></span>
+        <span class="card-spec-item" data-card-prop="platform"><span class="card-spec-label">Platform</span><span class="card-spec-value">V1-16XC</span></span>
+        <span class="card-spec-item" data-card-prop="model"><span class="card-spec-label">Model</span><span class="card-spec-value">5302</span></span>
         <span class="card-spec-item" data-card-prop="firmware"><span class="card-spec-label">FW</span><span class="card-spec-value card-spec-empty">—</span></span>
       </div>
       <div class="card-time" data-card-prop="time">
@@ -372,7 +399,7 @@
     </main>
     <div class="footer-wrap">
       <footer class="footer">
-        FiberX NetOps Team · <a href="mailto:noc@fiberx.net">noc@fiberx.net</a> · <a href="https://gofiberx.com" target="_blank" rel="noopener">gofiberx.com</a> · 2026
+        FiberX NetOps Team · 2026
       </footer>
     </div>
   </div>
