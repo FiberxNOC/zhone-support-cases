@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Genera README.md, index.html y cases/*.html desde data/cases.json.
+ * Genera REPORT.md, index.html y cases/*.html desde data/cases.json.
  * Ejecutar después de npm run sync o cuando ya exista data/cases.json.
  */
 import { readFile, writeFile, mkdir, readdir, unlink } from "fs/promises";
@@ -61,9 +61,9 @@ async function main() {
     console.log("  ", filenames[i]);
   }
 
-  await writeFile(join(ROOT, "README.md"), buildReadme(sorted, filenames), "utf8");
+  await writeFile(join(ROOT, "REPORT.md"), buildReadme(sorted, filenames), "utf8");
   await writeFile(join(ROOT, "index.html"), buildIndexHtml(sorted, filenames), "utf8");
-  console.log("README.md e index.html actualizados.");
+  console.log("REPORT.md e index.html actualizados.");
   console.log(`\nListo: ${sorted.length} casos. Abre index.html para ver el reporte.`);
 }
 

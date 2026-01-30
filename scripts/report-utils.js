@@ -1,5 +1,5 @@
 /**
- * Utilidades para generar el reporte (README, index.html, cases/*.html) desde data/cases.json.
+ * Utilidades para generar el reporte (REPORT.md, index.html, cases/*.html) desde data/cases.json.
  */
 
 const STATUS_ORDER = [

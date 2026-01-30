@@ -478,7 +478,7 @@ async function main() {
   } else {
     await mkdir(DATA_DIR, { recursive: true });
     await writeFile(dataPath, newRaw, "utf8");
-    console.log(`\nListo: ${cases.length} casos guardados en data/cases.json (${elapsed}s). Ejecuta "npm run build" para generar README.md, index.html y cases/*.`);
+    console.log(`\nListo: ${cases.length} casos guardados en data/cases.json (${elapsed}s). Ejecuta "npm run build" para generar REPORT.md, index.html y cases/*.`);
   }
 }
 

@@ -1,41 +1,48 @@
 # Device Providers – Support Cases
 
-Reporte generado desde **data/cases.json** (sincronizado con Notion), para presentación a personas externas.
+Reporte de casos de soporte de Device Providers, generado desde una base de datos de Notion. Incluye vista web (índice y detalle por caso) y generación de PDF para compartir.
 
-## Resumen
+## Requisitos
 
-Total de casos: **11**. Enlaces directos a cada caso:
+- Node.js (v18+)
+- Cuenta Notion con la base **device-providers-support-cases** y una integración con acceso a ella
 
-- [**1.** Problemas para aplicar el comando onu deactivate y asistencia de cual …](cases/113525.html) — Archived · High 🚨
-- [**2.** problema SFP XGS-GP-COMBO-SFP+C+OLT no reconoce las onu HX-XGS-5302 y …](cases/132099.html) — Archived · Normal
-- [**3.** Falla de Prueba](cases/123456.html) — Not started · High 🚨
-- [**4.** V1-16XC activation fail during provisioning ONT model 2466GN](cases/562894.html) — In progress · Critical 🔥
-- [**5.** Perdida constaste de manejo ONU 2466GN caso escalado w](cases/563338.html) — In progress · Normal
-- [**6.** Falla en aprovisionamiento de ONUs en OLT V1-16XC  escalado w](cases/563339.html) — Escalated to Engineering · High 🚨
-- [**7.** OLT MXK F-108 Presentando intermitencia escalado w](cases/563394.html) — Fix Scheduled · High 🚨
-- [**8.** Asistencia para determinar la causa de intermitencia presentada en con…](cases/252524.html) — Fix Scheduled · High 🚨
-- [**9.** Asistencia para solucionar intermitencias presentadas en suscriptores …](cases/113987.html) — Done · High 🚨
-- [**10.** Problemas de MTU escalado ](cases/113333.html) — Done · Normal
-- [**11.** ONU 5302 provisioned in V1-16XC xgspon port with sfp+ module XGS-GP-CO…](cases/562280.html) — Done · Low
+## Instalación
+
+```bash
+npm install
+cp .env.example .env
+npm run check
+```
+
+## Comandos
+
+| Comando | Descripción |
+|--------|-------------|
+| `npm run sync` | Descarga casos de Notion y guarda `data/cases.json` |
+| `npm run build` | Genera `REPORT.md`, `index.html` y `cases/*.html` desde los datos |
+| `npm run report` | Ejecuta sync y luego build |
+| `npm run pdf` | Genera `report.pdf` (portada, índice, resumen y todos los casos) |
+| `npm run verify` | Valida `data/cases.json`; con `--build` también ejecuta build y comprueba salida |
+| `npm run test` | Igual que `verify --build` |
+
+## Salida
+
+- **data/cases.json**: datos crudos (fuente local)
+- **REPORT.md**: listado de casos en Markdown
+- **index.html**: reporte web con filtros y tarjetas por caso
+- **cases/*.html**: una página por caso
+- **report.pdf**: documento único para enviar por email (requiere Puppeteer; usa Chromium embebido, no el navegador del sistema)
+
+## Publicar
+
+Tras `npm run report` (o `sync` + `build`), sube los archivos generados. No subas `.env` (está en `.gitignore`).
+
+## Variables de entorno (.env)
+
+- **NOTION_API_KEY**: token de la integración de Notion (`secret_...`)
+- **NOTION_DATABASE_ID**: ID de la base de datos (32 caracteres, en la URL de la base en Notion)
 
 ---
 
-## Índice de casos (tabla)
-
-| # | Case Name | Provider | Case # | Status | Affectation | Created |
-|---|-----------|----------|--------|--------|-------------|--------|
-| 1 | [Problemas para aplicar el comando onu deactivate y…](cases/113525.html) | — | 113525 | Archived | High 🚨 | 2026-03-07 |
-| 2 | [problema SFP XGS-GP-COMBO-SFP+C+OLT no reconoce la…](cases/132099.html) | — | 132099 | Archived | Normal | 2025-07-02 |
-| 3 | [Falla de Prueba](cases/123456.html) | — | 123456 | Not started | High 🚨 | 2026-01-27 |
-| 4 | [V1-16XC activation fail during provisioning ONT mo…](cases/562894.html) | — | 562894 | In progress | Critical 🔥 | 2025-11-21 |
-| 5 | [Perdida constaste de manejo ONU 2466GN caso escala…](cases/563338.html) | — | 563338 | In progress | Normal | 2026-01-16 |
-| 6 | [Falla en aprovisionamiento de ONUs en OLT V1-16XC …](cases/563339.html) | — | 563339 | Escalated to Engineering | High 🚨 | 2026-01-16 |
-| 7 | [OLT MXK F-108 Presentando intermitencia escalado w](cases/563394.html) | — | 563394 | Fix Scheduled | High 🚨 | 2026-01-20 |
-| 8 | [Asistencia para determinar la causa de intermitenc…](cases/252524.html) | — | 252524 | Fix Scheduled | High 🚨 | 2025-07-02 |
-| 9 | [Asistencia para solucionar intermitencias presenta…](cases/113987.html) | — | 113987 | Done | High 🚨 | 2025-06-05 |
-| 10 | [Problemas de MTU escalado ](cases/113333.html) | — | 113333 | Done | Normal | 2025-02-14 |
-| 11 | [ONU 5302 provisioned in V1-16XC xgspon port with s…](cases/562280.html) | — | 562280 | Done | Low | 2025-09-05 |
-
----
-
-*FiberX NetOps Team · 2026*
+*FiberX NetOps Team*
