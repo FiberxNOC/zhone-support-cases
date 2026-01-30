@@ -354,7 +354,7 @@ function buildCaseDetailHtml(c, index) {
   if (c.detalleDelProblema) sections.push(`<section class="detail-section"><h2 class="section-title">Problem detail</h2><div class="detail-content">${textToHtml(c.detalleDelProblema)}</div></section>`);
   if (c.resolucion) sections.push(`<section class="detail-section"><h2 class="section-title">Resolution</h2><div class="detail-content">${textToHtml(c.resolucion)}</div></section>`);
 
-  const caseLogoImg = '<img src="../logoheader-1.svg" alt="FiberX" class="logo-icon logo-icon-dark" width="168" height="52" loading="lazy" /><img src="../logoheader-light.svg" alt="FiberX" class="logo-icon logo-icon-light" width="168" height="52" loading="lazy" />';
+  const caseLogoImg = '<img src="../assets/logoheader-1.svg" alt="FiberX" class="logo-icon logo-icon-dark" width="168" height="52" loading="lazy" /><img src="../assets/logoheader-light.svg" alt="FiberX" class="logo-icon logo-icon-light" width="168" height="52" loading="lazy" />';
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -505,7 +505,7 @@ function buildIndexHtml(cases, filenames = null) {
     </article>`;
   }).join("");
 
-  const logoImg = `<img src="logoheader-1.svg" alt="FiberX" class="logo-icon logo-icon-dark" width="168" height="52" loading="lazy" /><img src="logoheader-light.svg" alt="FiberX" class="logo-icon logo-icon-light" width="168" height="52" loading="lazy" />`;
+  const logoImg = `<img src="assets/logoheader-1.svg" alt="FiberX" class="logo-icon logo-icon-dark" width="168" height="52" loading="lazy" /><img src="assets/logoheader-light.svg" alt="FiberX" class="logo-icon logo-icon-light" width="168" height="52" loading="lazy" />`;
   return `<!DOCTYPE html>
 <html lang="es">
 <head>

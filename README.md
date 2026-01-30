@@ -38,4 +38,4 @@ Total de casos: **11**. Enlaces directos a cada caso:
 
 ---
 
-*FiberX NetOps Team · [noc@fiberx.net](mailto:noc@fiberx.net) · [fiberx.net](https://fiberx.net) · 2026*
+*FiberX NetOps Team · 2026*

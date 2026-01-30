@@ -16,7 +16,7 @@
   </script>
   <div class="container">
     <header class="top-bar" role="banner">
-      <a href="../index.html" class="logo" aria-label="Volver al reporte"><img src="../logoheader-1.svg" alt="FiberX" class="logo-icon logo-icon-dark" width="168" height="52" loading="lazy" /><img src="../logoheader-light.svg" alt="FiberX" class="logo-icon logo-icon-light" width="168" height="52" loading="lazy" /></a>
+      <a href="../index.html" class="logo" aria-label="Volver al reporte"><img src="../assets/logoheader-1.svg" alt="FiberX" class="logo-icon logo-icon-dark" width="168" height="52" loading="lazy" /><img src="../assets/logoheader-light.svg" alt="FiberX" class="logo-icon logo-icon-light" width="168" height="52" loading="lazy" /></a>
       <a href="../index.html" class="back-link">← Volver al reporte</a>
       <button type="button" id="theme-toggle" class="theme-toggle theme-btn" aria-label="Cambiar a modo claro" title="Cambiar a modo claro"><i class="fa-solid fa-sun theme-btn-icon" aria-hidden="true"></i></button>
     </header>
@@ -50,68 +50,12 @@
     <div class="case-body">
       <div class="content-divider">Case content</div>
       <div class="detail-row-2"><section class="detail-section"><h2 class="section-title">Summary</h2><div class="detail-content"><p>Se creo incidente para validar inconveniente de MTU en la OLT V1-16XC que tenemos en uno de nuestros nodos.</p></div></section></div>
-      <section class="detail-section"><h2 class="section-title">Problem detail</h2><div class="detail-content"><p>Se le detallo a zhone el problema informandoles  requerimos de su apoyo para investigar la causa de un inconveniente de MTU <br>en la OLT V1-16XC que tenemos en uno de nuestros nodos.</p><p>El inconveniente está específicamente a que no estamos logrando pasar MTU superior a 1500 , dejo en notas las configuraciones realizadas. Agradecemos su apoyo en lo posible con una asistencia remota para validar este incidente.</p><pre class="detail-code">fx.oldz.car.carolina.v16# show running-config extended-vlan-tagging-operation V2274T
-extended-vlan-tagging-operation V2274T
-downstream-mode enable
-single-tagged-frame 1
-filter inner vid 2274 cos any tpid any
-double-tagged-frame 1
-filter outer vid 2274 cos any tpid any
-filter inner vid any cos any tpid any
-apply
-!
------------------------------------------------------------------------------------------------------
-traffic-profile V2274T
-tcont 1
-gemport 1/1
-dba-profile GPON
-mapper 1
-gemport count 1
-bridge 1
-ani mapper 1
-uni eth 1
-extended-vlan-tagging-operation V2274T
-max-frame 9230
-apply
-!
-------------------------------------------------------------------------------------------------------
-fx.oldz.car.carolina.v16# show running-config onu-profile fx.V2274T
-onu-profile fx.V2274T
-traffic-profile V2274T
-apply
-!
------------------------------------------------------------------------------------------------------
-interface gpon 0/13
-switchport mode trunk
-switchport trunk allowed vlan add 2274
-no shutdown
-olt auto-to-manual enable
-olt us-flow-mapping per-gem
-omci window-size 1
-olt vlan-flow 2274 s-vid 2274 tpid 0x8100 mac-lookup
-olt vp 11 vlan-flow 2274 s-vid 2274 mapping-onu 1 gemport 1/1
-olt vp mcast s-vid 2274 swap-s-vid 2274
-olt vp bcast s-vid 2274 swap-s-vid 2274
-onu add 1 ZNTS051d0a8d auto-learning
-onu get-alarms enable
-onu-profile 1 fx.V2274T
-!
----------------------------------------------------------------------------------------------------------</pre><pre class="detail-code">fx.oldz.car.carolina.v16# show vlan 2274
-Bridge VLAN ID Name State H/W Status Member ports
-(u)-Untagged, (t)-Tagged
-======= ======= ================ ======= ========== ==========================
-1 2274 VLAN2274 ACTIVE Success gpon0/13(t) eth0/21(t)
-eth0/22(t) po1(t)</pre><pre class="detail-code">----------------------------------------------------------------------------------------------------------
-[admin@fx-carolina-ict-mgt] &gt; tool/ping size=1502 address=10.10.140.1
-SEQ HOST SIZE TTL TIME STATUS
-0 10.10.140.1 timeout
-1 10.10.140.1 timeout
-sent=2 received=0 packet-loss=100%</pre><p>[admin@fx-carolina-ict-mgt] &gt; tool/ping size=1500 address=10.10.140.1<br>SEQ HOST SIZE TTL TIME STATUS<br>0 10.10.140.1 1500 64 1ms27us<br>1 10.10.140.1 1500 64 987us<br>2 10.10.140.1 1500 64 1ms162us<br>sent=3 received=3 packet-loss=0% min-rtt=987us avg-rtt=1ms58us<br>max-rtt=1ms162us</p><p>[admin@fx-carolina-ict-mgt] &gt;</p></div></section><section class="detail-section"><h2 class="section-title">Resolution</h2><div class="detail-content"><p>Por parte de Zhone informaron lo siguiente :</p><p>Based on your test topology, the MTU size needs to be adjusted not only on the ONT but also on the uplink and intergroup interfaces to ensure proper operation.</p><p>Below is a sample config to set the MTU to 9230 when an ONT is attached to gpon0/13 and the uplink interface is eth0/17.</p><p>traffic-profile V2274T</p><p>tcont 1</p><p>gemport 1/1</p><p>dba-profile GPON</p><p>mapper 1</p><p>gemport count 1</p><p>bridge 1</p><p>ani mapper 1</p><p>uni eth 1</p><p>extended-vlan-tagging-operation V2274T</p><p>max-frame 9230</p><p>apply</p><p>!</p><p>interface intergroup 0/7</p><p>mtu 9230</p><p>!</p><p>interface ethernet 0/17</p><p>interface-usage network-port</p><p>speed 1g</p><p>bridge-group 1 spanning-tree disable</p><p>switchport mode trunk</p><p>switchport trunk allowed vlan add 33</p><p>vlan ingress mapping s-vid 33 swap-s-vid 33</p><p>mtu 9230</p><p>service-policy type queuing output ethernet 0/17.policy-map.queuing.def</p><p>no shutdown</p><p>ip dhcp snooping trust</p><p>ipv6 dhcp snooping trust</p><p>!</p><p>Note: Each intergroup consists of two XGS-PON and two GPON ports. You can verify intergroup members using the following command:</p><p>V1-16XC# show intergroup member</p><p>-------------------------------</p><p>Interface ig0/1</p><p>Member:</p><p>xgspon0/1</p><p>xgspon0/2</p><p>gpon0/1</p><p>gpon0/2</p><p>-------------------------------</p><p>-------------------------------</p><p>Interface ig0/2</p><p>Member:</p><p>xgspon0/3</p><p>xgspon0/4</p><p>gpon0/3</p><p>gpon0/4</p><p>-------------------------------</p><p>-------------------------------</p><p>Interface ig0/3</p><p>Member:</p><p>xgspon0/5</p><p>xgspon0/6</p><p>gpon0/5</p><p>gpon0/6</p><p>-------------------------------</p><p>-------------------------------</p><p>Interface ig0/4</p><p>Member:</p><p>xgspon0/7</p><p>xgspon0/8</p><p>gpon0/7</p><p>gpon0/8</p><p>-------------------------------</p><p>-------------------------------</p><p>Interface ig0/5</p><p>Member:</p><p>xgspon0/9</p><p>xgspon0/10</p><p>gpon0/9</p><p>gpon0/10</p><p>-------------------------------</p><p>-------------------------------</p><p>Interface ig0/6</p><p>Member:</p><p>xgspon0/11</p><p>xgspon0/12</p><p>gpon0/11</p><p>gpon0/12</p><p>-------------------------------</p><p>-------------------------------</p><p>Interface ig0/7</p><p>Member:</p><p>xgspon0/13</p><p>xgspon0/14</p><p>gpon0/13</p><p>gpon0/14</p><p>-------------------------------</p><p>-------------------------------</p><p>Interface ig0/8</p><p>Member:</p><p>xgspon0/15</p><p>xgspon0/16</p><p>gpon0/15</p><p>gpon0/16</p><p>---------</p><p>Thanks,</p><p>Glenn</p><p>Product: 01t6700000BrgHyAAJ</p><p>Subject: Problemas de MTU</p><p>Customer Reference: emorillo@fiberx.net</p><p>Current Case Owner:</p><p>Please contact the customer service if you have any questions.</p><p>Best Regards</p><p>GlennLee</p></div></section>
+      <section class="detail-section"><h2 class="section-title">Problem detail</h2><div class="detail-content"><p>Se le detallo a zhone el problema informandoles  requerimos de su apoyo para investigar la causa de un inconveniente de MTU <br>en la OLT V1-16XC que tenemos en uno de nuestros nodos.</p><p>El inconveniente está específicamente a que no estamos logrando pasar MTU superior a 1500 , dejo en notas las configuraciones realizadas. Agradecemos su apoyo en lo posible con una asistencia remota para validar este incidente.</p><p>fx.oldz.car.carolina.v16# show running-config extended-vlan-tagging-operation V2274T<br>extended-vlan-tagging-operation V2274T<br>downstream-mode enable<br>single-tagged-frame 1<br>filter inner vid 2274 cos any tpid any<br>double-tagged-frame 1<br>filter outer vid 2274 cos any tpid any<br>filter inner vid any cos any tpid any<br>apply<br>!<br>-----------------------------------------------------------------------------------------------------<br>traffic-profile V2274T<br>tcont 1<br>gemport 1/1<br>dba-profile GPON<br>mapper 1<br>gemport count 1<br>bridge 1<br>ani mapper 1<br>uni eth 1<br>extended-vlan-tagging-operation V2274T<br>max-frame 9230<br>apply<br>!<br>------------------------------------------------------------------------------------------------------<br>fx.oldz.car.carolina.v16# show running-config onu-profile fx.V2274T<br>onu-profile fx.V2274T<br>traffic-profile V2274T<br>apply<br>!<br>-----------------------------------------------------------------------------------------------------<br>interface gpon 0/13<br>switchport mode trunk<br>switchport trunk allowed vlan add 2274<br>no shutdown<br>olt auto-to-manual enable<br>olt us-flow-mapping per-gem<br>omci window-size 1<br>olt vlan-flow 2274 s-vid 2274 tpid 0x8100 mac-lookup<br>olt vp 11 vlan-flow 2274 s-vid 2274 mapping-onu 1 gemport 1/1<br>olt vp mcast s-vid 2274 swap-s-vid 2274<br>olt vp bcast s-vid 2274 swap-s-vid 2274<br>onu add 1 ZNTS051d0a8d auto-learning<br>onu get-alarms enable<br>onu-profile 1 fx.V2274T<br>!<br>---------------------------------------------------------------------------------------------------------</p><p>fx.oldz.car.carolina.v16# show vlan 2274<br>Bridge VLAN ID Name State H/W Status Member ports<br>(u)-Untagged, (t)-Tagged<br>======= ======= ================ ======= ========== ==========================<br>1 2274 VLAN2274 ACTIVE Success gpon0/13(t) eth0/21(t)<br>eth0/22(t) po1(t)</p><p>----------------------------------------------------------------------------------------------------------<br>[admin@fx-carolina-ict-mgt] &gt; tool/ping size=1502 address=10.10.140.1<br>SEQ HOST SIZE TTL TIME STATUS<br>0 10.10.140.1 timeout<br>1 10.10.140.1 timeout<br>sent=2 received=0 packet-loss=100%</p><p>[admin@fx-carolina-ict-mgt] &gt; tool/ping size=1500 address=10.10.140.1<br>SEQ HOST SIZE TTL TIME STATUS<br>0 10.10.140.1 1500 64 1ms27us<br>1 10.10.140.1 1500 64 987us<br>2 10.10.140.1 1500 64 1ms162us<br>sent=3 received=3 packet-loss=0% min-rtt=987us avg-rtt=1ms58us<br>max-rtt=1ms162us</p><p>[admin@fx-carolina-ict-mgt] &gt;</p></div></section><section class="detail-section"><h2 class="section-title">Resolution</h2><div class="detail-content"><p>Por parte de Zhone informaron lo siguiente :</p><p>Based on your test topology, the MTU size needs to be adjusted not only on the ONT but also on the uplink and intergroup interfaces to ensure proper operation.</p><p>Below is a sample config to set the MTU to 9230 when an ONT is attached to gpon0/13 and the uplink interface is eth0/17.</p><p>traffic-profile V2274T</p><p>tcont 1</p><p>gemport 1/1</p><p>dba-profile GPON</p><p>mapper 1</p><p>gemport count 1</p><p>bridge 1</p><p>ani mapper 1</p><p>uni eth 1</p><p>extended-vlan-tagging-operation V2274T</p><p>max-frame 9230</p><p>apply</p><p>!</p><p>interface intergroup 0/7</p><p>mtu 9230</p><p>!</p><p>interface ethernet 0/17</p><p>interface-usage network-port</p><p>speed 1g</p><p>bridge-group 1 spanning-tree disable</p><p>switchport mode trunk</p><p>switchport trunk allowed vlan add 33</p><p>vlan ingress mapping s-vid 33 swap-s-vid 33</p><p>mtu 9230</p><p>service-policy type queuing output ethernet 0/17.policy-map.queuing.def</p><p>no shutdown</p><p>ip dhcp snooping trust</p><p>ipv6 dhcp snooping trust</p><p>!</p><p>Note: Each intergroup consists of two XGS-PON and two GPON ports. You can verify intergroup members using the following command:</p><p>V1-16XC# show intergroup member</p><p>-------------------------------</p><p>Interface ig0/1</p><p>Member:</p><p>xgspon0/1</p><p>xgspon0/2</p><p>gpon0/1</p><p>gpon0/2</p><p>-------------------------------</p><p>-------------------------------</p><p>Interface ig0/2</p><p>Member:</p><p>xgspon0/3</p><p>xgspon0/4</p><p>gpon0/3</p><p>gpon0/4</p><p>-------------------------------</p><p>-------------------------------</p><p>Interface ig0/3</p><p>Member:</p><p>xgspon0/5</p><p>xgspon0/6</p><p>gpon0/5</p><p>gpon0/6</p><p>-------------------------------</p><p>-------------------------------</p><p>Interface ig0/4</p><p>Member:</p><p>xgspon0/7</p><p>xgspon0/8</p><p>gpon0/7</p><p>gpon0/8</p><p>-------------------------------</p><p>-------------------------------</p><p>Interface ig0/5</p><p>Member:</p><p>xgspon0/9</p><p>xgspon0/10</p><p>gpon0/9</p><p>gpon0/10</p><p>-------------------------------</p><p>-------------------------------</p><p>Interface ig0/6</p><p>Member:</p><p>xgspon0/11</p><p>xgspon0/12</p><p>gpon0/11</p><p>gpon0/12</p><p>-------------------------------</p><p>-------------------------------</p><p>Interface ig0/7</p><p>Member:</p><p>xgspon0/13</p><p>xgspon0/14</p><p>gpon0/13</p><p>gpon0/14</p><p>-------------------------------</p><p>-------------------------------</p><p>Interface ig0/8</p><p>Member:</p><p>xgspon0/15</p><p>xgspon0/16</p><p>gpon0/15</p><p>gpon0/16</p><p>---------</p><p>Thanks,</p><p>Glenn</p><p>Product: 01t6700000BrgHyAAJ</p><p>Subject: Problemas de MTU</p><p>Customer Reference: emorillo@fiberx.net</p><p>Current Case Owner:</p><p>Please contact the customer service if you have any questions.</p><p>Best Regards</p><p>GlennLee</p></div></section>
     </div>
     <div class="footer-wrap">
       <footer class="footer">
         <a href="https://www.notion.so/Problemas-de-MTU-escalado-2f7e3293f43080a087dde406f042a802" target="_blank" rel="noopener">Ver en Notion →</a><br>
-        FiberX NetOps Team · <a href="mailto:noc@fiberx.net">noc@fiberx.net</a> · <a href="https://fiberx.net" target="_blank" rel="noopener">fiberx.net</a> · 2026
+        FiberX NetOps Team · 2026
       </footer>
     </div>
   </div>

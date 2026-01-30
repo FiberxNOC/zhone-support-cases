@@ -23,7 +23,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const DATA_FILE = join(ROOT, "data", "cases.json");
 const PDF_PATH = join(ROOT, "report.pdf");
-const LOGO_PATH = join(ROOT, "logoheader-light.svg");
+const LOGO_PATH = join(ROOT, "assets", "logoheader-light.svg");
 
 /** Altura aproximada de una página A4 en horizontal (contenido en px, 210mm - márgenes, ~96dpi) */
 const PAGE_CONTENT_HEIGHT_PX = 718;
