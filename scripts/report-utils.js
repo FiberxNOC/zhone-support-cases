@@ -230,24 +230,69 @@ function textToHtml(str) {
   return out.join("");
 }
 
+/** Normaliza nombre de prop para comparación (trim + lowercase). */
+function normPropName(s) {
+  return String(s ?? "").trim().toLowerCase();
+}
+
+/** Añade al objeto de props los campos de nivel caso (provider, model, device, etc.) con nombres canónicos,
+ *  para que siempre se muestren en el detalle aunque no estén en allProps (p. ej. inferidos o con otro nombre en Notion).
+ *  También normaliza claves de allProps (ej. "platform" → "Platform") para que Platform/sdNOS etc. siempre salgan. */
+function enrichAllPropsWithCase(c) {
+  const merged = { ...(c.allProps || {}) };
+  const set = (key, value) => {
+    if (value != null && String(value).trim() !== "") merged[key] = value;
+  };
+  set("Provider", c.provider);
+  set("Model", c.model);
+  set("Device", c.device);
+  set("Serial Number", c.serialNumber);
+  set("Firmware Version", c.firmwareVersion);
+  set("Platform", c.platform);
+  /* Si Platform no está pero allProps trae la prop con otro nombre (platform, PLATFORM, etc.), usar ese valor */
+  if (!merged["Platform"] || !String(merged["Platform"]).trim()) {
+    for (const [k, v] of Object.entries(merged)) {
+      if (normPropName(k || "") === "platform" && v != null && String(v).trim() !== "") {
+        merged["Platform"] = v;
+        break;
+      }
+    }
+  }
+  return merged;
+}
+
+/** Claves normalizadas por grupo: Identification, Dates, Classification, Device. Cualquier otra → Other.
+ *  Incluye todas las props de la DB Notion: No, Provider, Case Number, Created/Due Date, Failure Type, Affectation,
+ *  Internal Ticket, Device, Model, Firmware Version, Created by, Last edited by, Platform, Serial Number. */
+const PROP_GROUP_KEYS = {
+  id: ["no", "nº", "number", "case number", "internal ticket", "internal ticket number", "ticket", "ticket number"],
+  fechas: ["created date", "created", "due date", "due"],
+  clasif: ["afectation", "affectation", "failure type", "provider", "classification", "type"],
+  dispositivo: ["device", "model", "model.", "modelo", "serial number", "firmware version", "firmware", "firmwareversion", "fw", "platform", "patform", "plataforma", "version"],
+};
+
 function groupProps(allProps) {
   const id = [], fechas = [], clasif = [], dispositivo = [], otros = [];
   for (const [name, value] of Object.entries(allProps || {})) {
     if (value == null || !String(value).trim()) continue;
-    if (!name || !String(name).trim()) continue; /* Notion a veces trae props sin nombre (ej. número suelto) */
-    if (name === "Case Name") continue; /* ya es el título del caso, no mostrarlo como prop */
-    if (name === "Status") continue; /* Status se muestra como badge a la derecha en el hero */
+    /* Notion a veces trae la prop "No" (número de fila) con nombre vacío; la mostramos como "No" en Identification */
+    const displayName = name && String(name).trim() ? name : "No";
+    const nameNorm = normPropName(displayName);
+    if (nameNorm === "case name" || nameNorm === "name") continue; /* ya es el título del caso */
+    if (nameNorm === "status") continue; /* Status se muestra como badge en el hero */
     const v = escapeHtml(String(value)).replace(/\n/g, "<br>");
+    const isInternalTicket =
+      nameNorm === "internal ticket" || nameNorm === "internal ticket number" || nameNorm === "ticket number";
     const valueCell =
-      name === "Internal Ticket"
+      isInternalTicket
         ? `<span class="prop-value"><a href="${TICKET_VIEW_URL_BASE}${encodeURIComponent(String(value).trim())}" target="_blank" rel="noopener" class="prop-value-link">${v}</a></span>`
         : `<span class="prop-value">${v}</span>`;
-    const row = `<div class="prop-row"><span class="prop-label">${escapeHtml(name)}</span>${valueCell}</div>`;
-    if (["Case Number", "Internal Ticket"].includes(name)) id.push(row);
-    else if (["Created Date", "Due Date"].includes(name)) fechas.push(row);
-    else if (["Afectation", "Affectation", "Failure Type", "Provider"].includes(name)) clasif.push(row);
-    else if (["Device", "Model", "Model.", "Modelo", "Serial Number", "Firmware Version", "Firmware", "FirmwareVersion", "FW", "Platform", "Patform", "Plataforma"].includes(name)) dispositivo.push(row);
-    else otros.push(row);
+    const row = `<div class="prop-row"><span class="prop-label">${escapeHtml(displayName)}</span>${valueCell}</div>`;
+    if (PROP_GROUP_KEYS.id.some((k) => nameNorm === k)) id.push(row);
+    else if (PROP_GROUP_KEYS.fechas.some((k) => nameNorm === k)) fechas.push(row);
+    else if (PROP_GROUP_KEYS.clasif.some((k) => nameNorm === k)) clasif.push(row);
+    else if (PROP_GROUP_KEYS.dispositivo.some((k) => nameNorm === k)) dispositivo.push(row);
+    else otros.push(row); /* Last edited by, Created by, y cualquier otra prop de Notion */
   }
   return { id, fechas, clasif, dispositivo, otros };
 }
@@ -340,7 +385,17 @@ function buildCaseDetailHtml(c, index) {
   const statusColor = statusColors[c.status] || "#6b7280";
   const statusIsOpen = ["In progress", "Not started", "Escalated to Engineering", "Escalated to En..."].includes(c.status);
   const afectColor = afectacionColors[c.afectation] || "#6b7280";
-  const groups = groupProps(c.allProps);
+  const propsForDetail = enrichAllPropsWithCase(c);
+  const groups = groupProps(propsForDetail);
+  /* Lista de props cargadas para que el usuario vea qué trajimos (excl. Case Name y Status) */
+  const loadedPropEntries = Object.entries(propsForDetail).filter(
+    ([k, v]) => v != null && String(v).trim() !== "" && normPropName(k || "") !== "case name" && normPropName(k || "") !== "name" && normPropName(k || "") !== "status"
+  );
+  const loadedPropLabels = loadedPropEntries.map(([k]) => (k && String(k).trim() ? k : "No")).sort((a, b) => a.localeCompare(b));
+  const propsLoadedHtml =
+    loadedPropLabels.length > 0
+      ? `<div class="props-loaded-info" role="status"><span class="props-loaded-title">Propiedades cargadas en este caso (${loadedPropLabels.length}):</span> <span class="props-loaded-list">${escapeHtml(loadedPropLabels.join(", "))}</span></div>`
+      : "";
   const dueWarning =
     c.dueDate && c.createdDate && new Date(c.dueDate) < new Date(c.createdDate)
       ? '<span class="due-warning">Overdue</span>'
@@ -403,6 +458,7 @@ function buildCaseDetailHtml(c, index) {
         ${propBlock("Device", groups.dispositivo)}
         ${propBlock("Other", groups.otros)}
       </div>
+      ${propsLoadedHtml}
     </div>
     <div class="case-body">
       <div class="content-divider">Case content</div>

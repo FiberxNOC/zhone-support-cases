@@ -151,8 +151,18 @@ function getPropValue(p) {
   if (p.rich_text) return p.rich_text.map((t) => t.plain_text).join("") || null;
   if (p.number !== undefined && typeof p.number === "number") return p.number;
   if (p.number !== undefined && p.number != null && typeof p.number === "object" && "format" in p.number) return null;
-  if (p.select) return p.select.name ?? null;
-  if (p.status) return p.status.name ?? null;
+  /* Select (single): Platform, Model, Failure Type, etc. — Notion devuelve { select: { name: "sdNOS", color: "..." } } */
+  if (p.select != null) {
+    const s = p.select;
+    if (typeof s === "string") return s;
+    return (s && (s.name ?? s.value)) ?? null;
+  }
+  /* Status (tipo especial de Notion): igual que select pero con status */
+  if (p.status != null) {
+    const s = p.status;
+    if (typeof s === "string") return s;
+    return (s && (s.name ?? s.value)) ?? null;
+  }
   if (p.date?.start) return { start: p.date.start, end: p.date.end };
   if (p.multi_select?.length) return p.multi_select.map((s) => s.name);
   if (p.files?.length) return p.files.map((f) => f.name || f.file?.url).filter(Boolean);
@@ -218,6 +228,31 @@ function getProp(page, nameOrAliases) {
     if (v != null) {
       if (typeof v === "object" && v.start) return v;
       return v;
+    }
+  }
+  return null;
+}
+
+/** Obtiene el valor de una propiedad por nombre en el esquema (Notion devuelve props por ID, no por nombre). */
+function getPropBySchemaName(page, db, nameOrAliases) {
+  if (!db || !db.properties) return null;
+  const names = Array.isArray(nameOrAliases) ? nameOrAliases : [nameOrAliases];
+  const norm = (s) => String(s ?? "").trim().toLowerCase();
+  const props = page.properties || {};
+  for (const [propId, propSchema] of Object.entries(db.properties)) {
+    const schemaName = propSchema && propSchema.name ? String(propSchema.name).trim() : "";
+    if (!schemaName) continue;
+    for (const name of names) {
+      if (norm(schemaName) === norm(name)) {
+        const raw = props[propId] ?? props[propSchema.id];
+        const v = getPropValue(raw);
+        if (v != null) {
+          if (typeof v === "object" && !Array.isArray(v) && v.start) return v.start;
+          if (Array.isArray(v)) return v.join(", ");
+          return v;
+        }
+        break;
+      }
     }
   }
   return null;
@@ -321,27 +356,54 @@ function parsePage(page, db) {
   const afectation =
     allProps["Affectation"] ?? allProps["Afectation"] ?? getProp(page, ["Affectation", "Afectation"]);
 
-  const platform =
-    getFromAllPropsByNormalizedKey(allProps, "platform") ?? getProp(page, ["Platform", "Patform"]) ?? getPropByKeyMatch(allProps, "platform", "plataforma");
+  /* Platform/Model/FW: allProps ya los trae por getAllPropsFromSchema (por ID). Si faltan, buscar por nombre en el esquema (select/etc.). */
+  let platform =
+    getFromAllPropsByNormalizedKey(allProps, "platform") ?? getPropBySchemaName(page, db, ["Platform", "Patform", "Plataforma"]) ?? getPropByKeyMatch(allProps, "platform", "plataforma");
+  if (platform == null) {
+    const norm = (s) => String(s ?? "").trim().toLowerCase();
+    for (const [k, v] of Object.entries(allProps)) {
+      if (norm(k) === "platform" && v != null && String(v).trim() !== "") {
+        platform = v;
+        break;
+      }
+    }
+  }
   const model =
-    getFromAllPropsByNormalizedKey(allProps, "model") ?? getProp(page, ["Model", "Model."]) ?? getPropByKeyMatch(allProps, "model", "modelo");
+    getFromAllPropsByNormalizedKey(allProps, "model") ?? getPropBySchemaName(page, db, ["Model", "Model.", "Modelo"]) ?? getPropByKeyMatch(allProps, "model", "modelo");
   const firmwareVersion =
-    getFromAllPropsByNormalizedKey(allProps, "fw") ?? getProp(page, ["Firmware Version", "Firmware", "FW"]) ?? getPropByKeyMatch(allProps, "firmware", "fw", "version");
+    getFromAllPropsByNormalizedKey(allProps, "fw") ?? getPropBySchemaName(page, db, ["Firmware Version", "Firmware", "FW"]) ?? getPropByKeyMatch(allProps, "firmware", "fw", "version");
+
+  const provider = allProps["Provider"] ?? getPropBySchemaName(page, db, ["Provider"]) ?? getPropByKeyMatch(allProps, "provider");
+  const device = allProps["Device"] ?? getPropBySchemaName(page, db, ["Device"]);
+  const serialNumber = allProps["Serial Number"] ?? getPropBySchemaName(page, db, ["Serial Number"]);
+  const internalTicket = allProps["Internal Ticket"] ?? getPropBySchemaName(page, db, ["Internal Ticket"]);
+
+  /* Escribir en allProps todo lo que hayamos obtenido por esquema, para que el reporte muestre las 16 props (no solo las 9 de getAllPropsFromSchema). */
+  const setProp = (key, value) => {
+    if (value != null && String(value).trim() !== "") allProps[key] = value;
+  };
+  setProp("Provider", provider);
+  setProp("Platform", platform);
+  setProp("Model", model);
+  setProp("Firmware Version", firmwareVersion);
+  setProp("Device", device);
+  setProp("Serial Number", serialNumber);
+  if (internalTicket != null) allProps["Internal Ticket"] = internalTicket; /* puede ser "Empty" o número */
 
   return {
     id: page.id,
     caseName: String(caseName),
     allProps,
-    provider: allProps["Provider"] ?? getProp(page, ["Provider"]) ?? getPropByKeyMatch(allProps, "provider"),
+    provider: provider ?? null,
     caseNumber: caseNumber != null ? String(caseNumber) : null,
     status: status ?? null,
     createdDate: createdStr,
     dueDate: dueStr,
-    failureType: allProps["Failure Type"] ?? getProp(page, ["Failure Type"]),
+    failureType: allProps["Failure Type"] ?? getPropBySchemaName(page, db, ["Failure Type"]),
     afectation,
-    internalTicket: allProps["Internal Ticket"] ?? getProp(page, ["Internal Ticket"]),
-    device: allProps["Device"] ?? getProp(page, ["Device"]),
-    serialNumber: allProps["Serial Number"] ?? getProp(page, ["Serial Number"]),
+    internalTicket: internalTicket ?? null,
+    device: device ?? null,
+    serialNumber: serialNumber ?? null,
     model: model ?? null,
     firmwareVersion: firmwareVersion != null ? String(firmwareVersion) : null,
     platform: platform ?? null,

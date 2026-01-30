@@ -11,7 +11,8 @@
     "pdf": "node scripts/build-pdf-report.js",
     "serve": "node scripts/serve.js",
     "verify": "node scripts/verify.js",
-    "test": "node scripts/verify.js --build"
+    "test": "node scripts/verify.js --build",
+    "check-props": "node scripts/check-props.js"
   },
   "keywords": [
     "notion",

@@ -901,6 +901,26 @@ button:focus-visible {
   margin-bottom: 0;
 }
 
+.report-case .props-loaded-info {
+  margin-top: 1rem;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  background: var(--prop-group-bg);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent);
+}
+
+.report-case .props-loaded-title {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.report-case .props-loaded-list {
+  word-break: break-word;
+}
+
 .report-case .prop-group {
   background: var(--prop-group-bg);
   border-radius: var(--radius-sm);
@@ -919,9 +939,9 @@ button:focus-visible {
 }
 
 .report-case .prop-list {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.25rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem 0;
 }
 
 .report-case .prop-row {
@@ -1037,9 +1057,6 @@ button:focus-visible {
     grid-template-columns: 1fr;
   }
   .report-case .props-grid {
-    grid-template-columns: 1fr;
-  }
-  .report-case .prop-list {
     grid-template-columns: 1fr;
   }
 }
