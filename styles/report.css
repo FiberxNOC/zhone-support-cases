@@ -285,40 +285,6 @@ button:focus-visible {
   margin-bottom: 1rem;
 }
 
-.report-index .toolbar-row .pdf-action-wrap {
-  margin-right: auto;
-  flex: 0 0 auto;
-}
-
-.report-index .toolbar-row .btn-pdf {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.75rem;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: #fff;
-  background: var(--accent);
-  border: none;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: opacity 0.2s, background 0.2s;
-}
-
-.report-index .toolbar-row .btn-pdf:hover:not(:disabled) {
-  opacity: 0.95;
-  background: #2563eb;
-}
-
-.report-index .toolbar-row .btn-pdf:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.report-index .toolbar-row .btn-pdf i {
-  font-size: 0.95rem;
-}
-
 .report-index .toolbar-row .filters-wrap,
 .report-index .toolbar-row .columns-wrap {
   margin-bottom: 0;
@@ -1216,8 +1182,7 @@ button:focus-visible {
   .scroll-top-btn,
   .filter-toggle,
   .filters-wrap,
-  .columns-wrap,
-  .pdf-action-wrap {
+  .columns-wrap {
     display: none !important;
   }
   .report-index .card,

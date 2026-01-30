@@ -26,12 +26,6 @@
       <div class="stats"><span>Total: <strong>11</strong> casos</span><span id="filter-count" class="filter-count"></span></div>
     </header>
     <div class="toolbar-row">
-    <div class="pdf-action-wrap">
-      <button type="button" id="generate-pdf-btn" class="btn btn-pdf" aria-label="Generar y descargar reporte PDF" title="Genera report.pdf (puede tardar unos segundos)">
-        <i class="fa-solid fa-file-pdf" aria-hidden="true"></i>
-        <span>Generar PDF</span>
-      </button>
-    </div>
     <div class="filters-wrap">
       <button type="button" id="filter-toggle" class="filter-toggle" aria-expanded="false" aria-controls="filter-panel" aria-label="Mostrar u ocultar filtros">
         <i class="fa-solid fa-sliders" aria-hidden="true"></i>
@@ -477,36 +471,6 @@
   <button type="button" id="scroll-top-btn" class="scroll-top-btn" aria-label="Subir" title="Subir"><i class="fa-solid fa-chevron-up" aria-hidden="true"></i></button>
   <script>
   (function(){var btn=document.getElementById('scroll-top-btn');if(!btn)return;function onScroll(){btn.classList.toggle('is-visible',(window.scrollY||document.documentElement.scrollTop)>400);}window.addEventListener('scroll',onScroll,{passive:true});onScroll();btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});})();
-  </script>
-  <script>
-  (function(){
-    var pdfBtn=document.getElementById('generate-pdf-btn');
-    if(!pdfBtn)return;
-    var label=pdfBtn.querySelector('span');
-    var icon=pdfBtn.querySelector('i');
-    pdfBtn.addEventListener('click',function(){
-      if(pdfBtn.disabled)return;
-      pdfBtn.disabled=true;
-      if(label)label.textContent='Generando…';
-      if(icon){icon.className='fa-solid fa-spinner fa-spin';icon.setAttribute('aria-hidden','true');}
-      fetch('/api/generate-pdf').then(function(r){
-        if(!r.ok)return r.text().then(function(t){throw new Error(t||'Error al generar PDF');});
-        return r.blob();
-      }).then(function(blob){
-        var a=document.createElement('a');
-        a.href=URL.createObjectURL(blob);
-        a.download='report.pdf';
-        a.click();
-        URL.revokeObjectURL(a.href);
-      }).catch(function(err){
-        alert(err.message||'No se pudo generar el PDF. ¿Estás usando el servidor local (npm run serve)?');
-      }).finally(function(){
-        pdfBtn.disabled=false;
-        if(label)label.textContent='Generar PDF';
-        if(icon){icon.className='fa-solid fa-file-pdf';icon.setAttribute('aria-hidden','true');}
-      });
-    });
-  })();
   </script>
 </body>
 </html>
