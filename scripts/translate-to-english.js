@@ -204,7 +204,7 @@ async function main() {
 
   await mkdir(DATA_DIR, { recursive: true });
   await writeFile(DATA_EN_FILE, JSON.stringify(out, null, 2), "utf8");
-  console.log(`\nListo: ${DATA_EN_FILE}${translatedCount > 0 ? ` (${translatedCount} traducidos)` : " (sin cambios)"}. Ejecuta "npm run build" para generar REPORT-en.md, index-en.html y cases-en/*.`);
+  console.log(`\nListo: ${DATA_EN_FILE}${translatedCount > 0 ? ` (${translatedCount} traducidos)` : " (sin cambios)"}. Ejecuta "npm run build" para generar REPORT-en.md y cases/en/* (un solo index.html con ES+EN).`);
 }
 
 main().catch((err) => {

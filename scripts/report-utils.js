@@ -7,7 +7,7 @@
 const I18N = {
   es: {
     reportTitle: "Device Providers – Support Cases",
-    reportSubtitle: "Reporte generado desde **data/cases.json** (sincronizado con Notion), para presentación a personas externas.",
+    reportSubtitle: "Resumen de casos de soporte a proveedores de equipos, para seguimiento y visibilidad del estado de cada caso.",
     summary: "Resumen",
     totalCases: "Total de casos",
     indexTable: "Índice de casos (tabla)",
@@ -78,7 +78,7 @@ const I18N = {
   },
   en: {
     reportTitle: "Device Providers – Support Cases",
-    reportSubtitle: "Report generated from **data/cases.json** (synced with Notion), for external presentation.",
+    reportSubtitle: "Summary of equipment provider support cases, for tracking and visibility of each case status.",
     summary: "Summary",
     totalCases: "Total cases",
     indexTable: "Cases index (table)",
@@ -504,7 +504,7 @@ function caseToMarkdown(c, index) {
 
 function buildReadme(cases, filenames = null, lang = "es") {
   const used = new Set();
-  const casesDir = lang === "en" ? "cases-en" : "cases";
+  const casesDir = lang === "en" ? "cases/en" : "cases/es";
   const getFilename = (c, i) => filenames ? filenames[i] : getCaseFilename(c, i, used);
   const lines = [
     `# ${t(lang, "reportTitle")}`,
@@ -534,7 +534,7 @@ function buildReadme(cases, filenames = null, lang = "es") {
   return lines.join("\n");
 }
 
-function buildCaseDetailHtml(c, index, lang = "es") {
+function buildCaseDetailHtml(c, index, lang = "es", baseHref = "../") {
   const time = computeTimeInfo(c, lang);
   const statusColors = { Done: "#64748b", "Fix Scheduled": "#94a3b8", "In progress": "#2563eb", "Not started": "#94a3b8", "Escalated to En...": "#64748b", "Escalated to Engineering": "#64748b" };
   const afectacionColors = { "Critical 🔥": "#475569", "High 🚨": "#64748b", Normal: "#94a3b8", Low: "#cbd5e1" };
@@ -564,8 +564,8 @@ function buildCaseDetailHtml(c, index, lang = "es") {
   if (c.detalleDelProblema) sections.push(`<section class="detail-section"><h2 class="section-title">${t(lang, "problemDetail")}</h2><div class="detail-content">${textToHtml(c.detalleDelProblema)}</div></section>`);
   if (c.resolucion) sections.push(`<section class="detail-section"><h2 class="section-title">${t(lang, "resolution")}</h2><div class="detail-content">${textToHtml(c.resolucion)}</div></section>`);
 
-  const indexLink = lang === "en" ? "../index.html#en" : "../index.html";
-  const caseLogoImg = '<img src="../assets/logoheader-1.svg" alt="FiberX" class="logo-icon logo-icon-dark" width="168" height="52" loading="lazy" /><img src="../assets/logoheader-light.svg" alt="FiberX" class="logo-icon logo-icon-light" width="168" height="52" loading="lazy" />';
+  const indexLink = lang === "en" ? baseHref + "index.html#en" : baseHref + "index.html";
+  const caseLogoImg = '<img src="' + baseHref + 'assets/logoheader-1.svg" alt="FiberX" class="logo-icon logo-icon-dark" width="168" height="52" loading="lazy" /><img src="' + baseHref + 'assets/logoheader-light.svg" alt="FiberX" class="logo-icon logo-icon-light" width="168" height="52" loading="lazy" />';
   const themeLabel = lang === "es" ? "Cambiar a modo claro" : "Switch to light mode";
   const themeLabelDark = lang === "es" ? "Cambiar a modo oscuro" : "Switch to dark mode";
   return `<!DOCTYPE html>
@@ -578,7 +578,7 @@ function buildCaseDetailHtml(c, index, lang = "es") {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
-  <link rel="stylesheet" href="../styles/report.css">
+  <link rel="stylesheet" href="${baseHref}styles/report.css">
 </head>
 <body class="report-case">
   <script>
@@ -644,7 +644,7 @@ function buildCaseDetailHtml(c, index, lang = "es") {
 /** Construye el fragmento de contenido del index (header + filtros + grid) con IDs sufijados para un solo index bilingüe. */
 function buildIndexContentFragment(cases, filenames, lang, suffix) {
   const used = new Set();
-  const casesDir = lang === "en" ? "cases-en" : "cases";
+  const casesDir = lang === "en" ? "cases/en" : "cases/es";
   const getFilename = (c, i) => filenames ? filenames[i] : getCaseFilename(c, i, used);
   const timeInfos = cases.map((c) => computeTimeInfo(c, lang));
   const statusColors = { Done: "#64748b", "Fix Scheduled": "#94a3b8", "In progress": "#2563eb", "Not started": "#94a3b8", "Escalated to En...": "#64748b", "Escalated to Engineering": "#64748b" };
@@ -811,7 +811,7 @@ function buildSingleIndexHtml(casesEs, filenamesEs, casesEn, filenamesEn) {
   const fragmentEs = buildIndexContentFragment(casesEs, filenamesEs, "es", "es");
   const fragmentEn = hasEn ? buildIndexContentFragment(casesEn, filenamesEn, "en", "en") : "";
   const langSwitchHtml = hasEn
-    ? '<button type="button" id="lang-switch-btn" class="lang-switch btn btn-secondary" aria-label="English">' + t("es", "langSwitchToEn") + '</button>'
+    ? '<div class="lang-toggle" role="group" aria-label="Idioma / Language"><span class="lang-toggle-label">Lang</span><div class="lang-toggle-options"><button type="button" id="lang-opt-en" class="lang-toggle-option" data-lang="en" aria-label="English (USA)" title="English"><span class="lang-flag" aria-hidden="true">🇺🇸</span></button><button type="button" id="lang-opt-es" class="lang-toggle-option is-active" data-lang="es" aria-label="Español (Puerto Rico)" title="Español"><span class="lang-flag" aria-hidden="true">🇵🇷</span></button></div></div>'
     : "";
   const suffixes = hasEn ? ["es", "en"] : ["es"];
   const showingEs = t("es", "showing");
@@ -864,11 +864,14 @@ function buildSingleIndexHtml(casesEs, filenamesEs, casesEn, filenamesEn) {
       var esPanel=document.getElementById('content-es');var enPanel=document.getElementById('content-en');
       if(esPanel){esPanel.hidden=lang!=='es';}
       if(enPanel){enPanel.hidden=lang!=='en';}
-      var btn=document.getElementById('lang-switch-btn');
-      if(btn){btn.textContent=lang==='es'?${JSON.stringify(t("es", "langSwitchToEn"))}:${JSON.stringify(t("en", "langSwitchToEs"))};btn.setAttribute('aria-label',lang==='es'?${JSON.stringify(t("en", "langSwitchToEs"))}:${JSON.stringify(t("es", "langSwitchToEn"))});}
+      var optEn=document.getElementById('lang-opt-en');var optEs=document.getElementById('lang-opt-es');
+      if(optEn){optEn.classList.toggle('is-active',lang==='en');optEn.setAttribute('aria-pressed',lang==='en');}
+      if(optEs){optEs.classList.toggle('is-active',lang==='es');optEs.setAttribute('aria-pressed',lang==='es');}
+    }
     if(hasEn){
-      var btn=document.getElementById('lang-switch-btn');
-      if(btn){btn.addEventListener('click',function(){var lang=getLang();window.location.hash=lang==='es'?'#en':'#';applyLang();});}
+      var optEn=document.getElementById('lang-opt-en');var optEs=document.getElementById('lang-opt-es');
+      if(optEn){optEn.addEventListener('click',function(){window.location.hash='#en';});}
+      if(optEs){optEs.addEventListener('click',function(){window.location.hash='#';});}
       window.addEventListener('hashchange',applyLang);
     }
     applyLang();
@@ -953,8 +956,8 @@ function buildSingleIndexHtml(casesEs, filenamesEs, casesEn, filenamesEn) {
 
 function buildIndexHtml(cases, filenames = null, lang = "es") {
   const used = new Set();
-  const casesDir = lang === "en" ? "cases-en" : "cases";
-  const indexBack = lang === "en" ? "index-en.html" : "index.html";
+  const casesDir = lang === "en" ? "cases/en" : "cases/es";
+  const indexBack = lang === "en" ? "index.html#en" : "index.html";
   const getFilename = (c, i) => filenames ? filenames[i] : getCaseFilename(c, i, used);
   const timeInfos = cases.map((c) => computeTimeInfo(c, lang));
   const statusColors = { Done: "#64748b", "Fix Scheduled": "#94a3b8", "In progress": "#2563eb", "Not started": "#94a3b8", "Escalated to En...": "#64748b", "Escalated to Engineering": "#64748b" };
@@ -1055,7 +1058,7 @@ function buildIndexHtml(cases, filenames = null, lang = "es") {
     <header class="top-bar" role="banner">
       <a href="https://gofiberx.com" class="logo" target="_blank" rel="noopener" aria-label="${t(lang, "goToSite")}">${logoImg}</a>
       <div class="top-bar-actions">
-        <a href="${lang === "en" ? "index.html" : "index-en.html"}" class="lang-switch btn btn-secondary" aria-label="${lang === "en" ? t(lang, "langSwitchToEs") : t(lang, "langSwitchToEn")}">${lang === "en" ? t(lang, "langSwitchToEs") : t(lang, "langSwitchToEn")}</a>
+        <a href="${lang === "en" ? "index.html" : "index.html#en"}" class="lang-switch btn btn-secondary" aria-label="${lang === "en" ? t(lang, "langSwitchToEs") : t(lang, "langSwitchToEn")}">${lang === "en" ? t(lang, "langSwitchToEs") : t(lang, "langSwitchToEn")}</a>
         <button type="button" id="theme-toggle" class="theme-toggle theme-btn" aria-label="${themeLabel}" title="${themeLabel}"><i class="fa-solid fa-sun theme-btn-icon" aria-hidden="true"></i></button>
       </div>
     </header>

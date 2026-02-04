@@ -35,8 +35,8 @@ npm run check
 - **data/cases.json**: datos crudos en español (fuente local)
 - **data/cases-en.json**: datos traducidos al inglés (generado por `npm run translate`)
 - **REPORT.md** / **REPORT-en.md**: listado de casos en Markdown (ES / EN)
-- **index.html** / **index-en.html**: reporte web con filtros y tarjetas (ES / EN)
-- **cases/*.html** / **cases-en/*.html**: una página por caso (ES / EN)
+- **index.html**: reporte web con filtros y tarjetas; botón de idioma para ES/EN en un solo archivo
+- **cases/es/*.html** y **cases/en/*.html**: una página por caso (ES y EN en subcarpetas)
 - **report.pdf** / **report-en.pdf**: documento único para enviar por email (requiere Puppeteer)
 
 ## Publicar

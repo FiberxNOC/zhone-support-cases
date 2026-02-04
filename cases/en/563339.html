@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>16. Fault in provisioning of ONUs on OLT V1-16XC.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../../styles/report.css">
+</head>
+<body class="report-case">
+  <script>
+  (function(){var k='report-theme';var s=document.documentElement.getAttribute('data-theme')||localStorage.getItem(k)||(window.matchMedia&&window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',s);})();
+  </script>
+  <div class="container">
+    <header class="top-bar" role="banner">
+      <a href="../../index.html#en" class="logo" aria-label="Back to report"><img src="../../assets/logoheader-1.svg" alt="FiberX" class="logo-icon logo-icon-dark" width="168" height="52" loading="lazy" /><img src="../../assets/logoheader-light.svg" alt="FiberX" class="logo-icon logo-icon-light" width="168" height="52" loading="lazy" /></a>
+      <a href="../../index.html#en" class="back-link">← Back to report</a>
+      <button type="button" id="theme-toggle" class="theme-toggle theme-btn" aria-label="Switch to light mode" title="Switch to light mode"><i class="fa-solid fa-sun theme-btn-icon" aria-hidden="true"></i></button>
+    </header>
+    <div class="case-details">
+      <header class="case-hero">
+        <div class="case-hero-top">
+          <div class="case-hero-top-left">
+            <span class="case-num">Case #563339</span>
+            
+            
+            <span class="badge" style="--badge-color:#64748b">High 🚨</span>
+          </div>
+          <span class="badge status-badge-hero status-badge--open" style="--badge-color:#64748b"><span class="status-dot" aria-hidden="true"></span>Escalated to Engineering</span>
+        </div>
+        <h1 class="case-title">Fault in provisioning of ONUs on OLT V1-16XC.</h1>
+        <div class="key-info">
+          <span class="key-info-item"><strong>Open for 19 days</strong></span>
+          <span class="key-info-item">Created: 2026-01-16</span>
+          
+          
+        </div>
+      </header>
+      <div class="props-grid">
+        <div class="prop-group"><h3 class="prop-group-title">Identification</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">No</span><span class="prop-value">4</span></div><div class="prop-row"><span class="prop-label">Case Number</span><span class="prop-value">563339</span></div></div></div>
+        <div class="prop-group"><h3 class="prop-group-title">Dates</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">Created Date</span><span class="prop-value">2026-01-16</span></div></div></div>
+        <div class="prop-group"><h3 class="prop-group-title">Classification</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">Failure Type</span><span class="prop-value">Activation Error</span></div><div class="prop-row"><span class="prop-label">Afectation</span><span class="prop-value">High 🚨</span></div></div></div>
+        <div class="prop-group"><h3 class="prop-group-title">Device</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">Platform</span><span class="prop-value">V1-16XC</span></div></div></div>
+        <div class="prop-group"><h3 class="prop-group-title">Other</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">Last edited by</span><span class="prop-value">Winder Torres</span></div><div class="prop-row"><span class="prop-label">Created by</span><span class="prop-value">José Luis</span></div></div></div>
+      </div>
+      <div class="props-loaded-info" role="status"><span class="props-loaded-title">Properties loaded for this case (8):</span> <span class="props-loaded-list">Afectation, Case Number, Created by, Created Date, Failure Type, Last edited by, No, Platform</span></div>
+    </div>
+    <div class="case-body">
+      <div class="content-divider">Case content</div>
+      <div class="detail-row-2"><section class="detail-section"><h2 class="section-title">Summary</h2><div class="detail-content"><p>Inconveniences with the V1-16XC OLT when provisioning new GPON services. Observed behavior is that the OLT fails to correctly detect and activate the ONU, despite physical infrastructure being operational.</p><p>---</p></div></section><section class="detail-section"><h2 class="section-title">Notes</h2><div class="detail-content"><p>The inconvenience persists when provisioning some ONUs in OLTs in production. The optical budget of the equipment that presents problems has been sent for provisioning.</p></div></section></div>
+      <section class="detail-section"><h2 class="section-title">Problem detail</h2><div class="detail-content"><p>Events logged in the terminal monitor of the OLT during provisioning:</p><p>2026-01-15 13:37:23 GPON[7859]: DISCOVERED serial-number ZNTS03d19d4d EqD=57364 (onu gpon0/9,10)<br>2026-01-15 13:37:23 GPON[7859]: ONU(gpon0/9,10) ACTIVATION FAIL, reason : Ranging (SN:ZNTS03d19d4d)<br>2026-01-15 13:37:23 GPON[7859]: ONU(gpon0/9,10) New Registered.(SN:)<br>2026-01-15 13:37:23 GPON[7859]: No Entry ONU(gpon0/9,10) serial-number<br>2026-01-15 13:37:43 GPON[7859]: DISCOVERED serial-number ZNTS03d19d4d EqD=57364 (onu gpon0/9,10)<br>2026-01-15 13:37:43 GPON[7859]: ONU(gpon0/9,10) Alarm LOAMi ON<br>2026-01-15 13:37:43 GPON[7859]: ONU(gpon0/9,10) ACTIVATION FAIL, reason : ONU alarm when PW authentication (SN:ZNTS03d19d4d)<br>2026-01-15 13:37:43 GPON[7859]: ONU(gpon0/9,10) Alarm LOAMi OFF<br>2026-01-15 13:37:43 GPON[7859]: ONU(gpon0/9,10) DEACTIVATION (Reason: LOAMi)<br>2026-01-15 13:37:53 GPON[7859]: DISCOVERED serial-number ZNTS03d19d4d EqD=57365 (onu gpon0/9,10)<br>2026-01-15 13:37:53 GPON[7859]: ONU(gpon0/9,10) Alarm LOAMi ON</p><p>The reported errors indicate failures during ranging and authentication (LOAMi / PW authentication), preventing the ONU from completing the activation process.</p><p>It is worth noting that on the same PON port (gpon0/9) there are multiple active customers connected to the same splitter and over the same fiber infrastructure.</p></div></section><section class="detail-section"><h2 class="section-title">Resolution</h2><div class="detail-content"><p>The same issue was presented in the laboratory OLT. The requested steps were applied by the provider and resolved in the laboratory OLT; however, the inconvenience persists in the Carolina production OLT.</p><p>Details:</p><p>1. Inconsistent provisioning of ONT/UN.</p><p>The problem occurs in V1-16XC OLTs with SFP LTF5308B-BCA+.<br>When connecting different models such as 2466GN, 5228XG, and 5302XG, the OLT displays the message: ACTIVATION FAIL, reason: Ranging.</p><p>Tests were performed with the following commands:</p><p>olt specific-ploam disable ZNTS051d0e7f</p><p>olt specific-ploam disable ZNTS051d0ce5</p><p>olt specific-ploam enable ZNTS051d0e7f</p><p>discover-serial-number stop</p><p>discover-serial-number start 5</p><p>onu add 7 ZNTS051d0e7f auto-learning</p><p>show system</p><p>show interface module-info gpon 0/1</p><p>shutdown</p><p>#wait 3 seconds</p><p>no shutdown</p><p>olt specific-ploam enable ZNTS051d0ce5</p><p>onu add 18 ZNTS051d0ce5 auto-learning</p><p>shutdown</p><p>no shutdown</p><p>olt signal-check enable</p><p>olt rogue-onu detect tx-always enable</p><p>show run | grep auto-transceiver-list</p><p>olt transceiver-type hisense-e</p></div></section>
+    </div>
+    <div class="footer-wrap">
+      <footer class="footer">
+        <a href="https://www.notion.so/Falla-en-aprovisionamiento-de-ONUs-en-OLT-V1-16XC-2f7e3293f430808aa3e7de998cf7f9ff" target="_blank" rel="noopener">View in Notion →</a><br>
+        FiberX NetOps Team · 2026
+      </footer>
+    </div>
+  </div>
+  <script>
+  (function(){var k='report-theme';var b=document.getElementById('theme-toggle');if(!b)return;var icon=b.querySelector('.theme-btn-icon');var lightL="Switch to light mode";var darkL="Switch to dark mode";function u(){var s=document.documentElement.getAttribute('data-theme');var isDark=s==='dark';b.setAttribute('aria-label',isDark?lightL:darkL);b.setAttribute('title',isDark?lightL:darkL);if(icon){icon.className='theme-btn-icon fa-solid '+(isDark?'fa-sun':'fa-moon');}}u();b.addEventListener('click',function(){var s=document.documentElement.getAttribute('data-theme');s=s==='dark'?'light':'dark';localStorage.setItem(k,s);document.documentElement.setAttribute('data-theme',s);u();});})();
+  </script>
+  <button type="button" id="scroll-top-btn" class="scroll-top-btn" aria-label="Scroll up" title="Scroll up"><i class="fa-solid fa-chevron-up" aria-hidden="true"></i></button>
+  <script>
+  (function(){var btn=document.getElementById('scroll-top-btn');if(!btn)return;function onScroll(){btn.classList.toggle('is-visible',(window.scrollY||document.documentElement.scrollTop)>400);}window.addEventListener('scroll',onScroll,{passive:true});onScroll();btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});})();
+  </script>
+</body>
+</html>

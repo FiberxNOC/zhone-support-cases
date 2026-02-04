@@ -93,12 +93,13 @@ async function validateBuildOutput(cases) {
     throw err;
   }
 
+  const casesEsDir = join(CASES_DIR, "es");
   let existing;
   try {
-    existing = await readdir(CASES_DIR);
+    existing = await readdir(casesEsDir);
   } catch (err) {
     if (err.code === "ENOENT") {
-      fail("Carpeta cases/ no existe. Ejecuta: npm run build");
+      fail("Carpeta cases/es/ no existe. Ejecuta: npm run build");
       return false;
     }
     throw err;
@@ -110,12 +111,12 @@ async function validateBuildOutput(cases) {
   const extra = htmlFiles.filter((f) => !expectedSet.has(f));
 
   if (missing.length > 0) {
-    fail(`Faltan ${missing.length} archivo(s) de caso: ${missing.slice(0, 3).join(", ")}${missing.length > 3 ? "…" : ""}`);
+    fail(`Faltan ${missing.length} archivo(s) de caso en cases/es/: ${missing.slice(0, 3).join(", ")}${missing.length > 3 ? "…" : ""}`);
   } else {
-    ok(`${expectedFiles.length} archivos en cases/*.html coinciden con los casos`);
+    ok(`${expectedFiles.length} archivos en cases/es/*.html coinciden con los casos`);
   }
   if (extra.length > 0) {
-    fail(`Archivos obsoletos en cases/: ${extra.slice(0, 3).join(", ")}${extra.length > 3 ? "…" : ""} (ejecuta npm run build para limpiar)`);
+    fail(`Archivos obsoletos en cases/es/: ${extra.slice(0, 3).join(", ")}${extra.length > 3 ? "…" : ""} (ejecuta npm run build para limpiar)`);
   }
 
   return missing.length === 0 && extra.length === 0;

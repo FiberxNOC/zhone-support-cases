@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * Genera REPORT.md, index.html y cases/*.html desde data/cases.json (español).
- * Si existe data/cases-en.json, genera también REPORT-en.md, index-en.html y cases-en/*.html (inglés).
+ * Genera REPORT.md, index.html y cases/es/*.html desde data/cases.json (español).
+ * Si existe data/cases-en.json, genera también REPORT-en.md y cases/en/*.html (inglés). Un solo index.html con paneles ES/EN.
  * Omite el build si los datos no han cambiado (hash en data/.build-hash).
  */
-import { readFile, writeFile, mkdir, readdir, unlink } from "fs/promises";
+import { readFile, writeFile, mkdir, readdir, unlink, rm } from "fs/promises";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { createHash } from "crypto";
@@ -23,13 +23,14 @@ const DATA_FILE = join(DATA_DIR, "cases.json");
 const DATA_EN_FILE = join(DATA_DIR, "cases-en.json");
 const BUILD_HASH_FILE = join(DATA_DIR, ".build-hash");
 const CASES_DIR = join(ROOT, "cases");
-const CASES_EN_DIR = join(ROOT, "cases-en");
+const CASES_ES_DIR = join(CASES_DIR, "es");
+const CASES_EN_DIR = join(CASES_DIR, "en");
 
 function hash(str) {
   return createHash("sha256").update(str, "utf8").digest("hex");
 }
 
-async function buildOne(cases, casesDir, reportPath, lang) {
+async function buildOne(cases, casesDir, reportPath, lang, baseHref) {
   const sorted = sortCases(cases);
   await mkdir(casesDir, { recursive: true });
 
@@ -49,7 +50,7 @@ async function buildOne(cases, casesDir, reportPath, lang) {
 
   for (let i = 0; i < sorted.length; i++) {
     const c = sorted[i];
-    await writeFile(join(casesDir, filenames[i]), buildCaseDetailHtml(c, i + 1, lang), "utf8");
+    await writeFile(join(casesDir, filenames[i]), buildCaseDetailHtml(c, i + 1, lang, baseHref), "utf8");
     console.log(`  (${lang})`, filenames[i]);
   }
 
@@ -92,23 +93,47 @@ async function main() {
     process.exit(1);
   }
 
+  await mkdir(CASES_DIR, { recursive: true });
+  await mkdir(CASES_ES_DIR, { recursive: true });
+
   console.log("Generando reporte en español…");
-  const { sorted: sortedEs, filenames: filenamesEs } = await buildOne(cases, CASES_DIR, join(ROOT, "REPORT.md"), "es");
-  console.log("REPORT.md y cases/*.html actualizados.");
+  const { sorted: sortedEs, filenames: filenamesEs } = await buildOne(cases, CASES_ES_DIR, join(ROOT, "REPORT.md"), "es", "../../");
+  console.log("REPORT.md y cases/es/*.html actualizados.");
 
   let sortedEn = null;
   let filenamesEn = null;
   if (rawEn) {
     const casesEn = JSON.parse(rawEn);
     if (Array.isArray(casesEn) && casesEn.length > 0) {
+      await mkdir(CASES_EN_DIR, { recursive: true });
       console.log("\nGenerando reporte en inglés…");
-      const out = await buildOne(casesEn, CASES_EN_DIR, join(ROOT, "REPORT-en.md"), "en");
+      const out = await buildOne(casesEn, CASES_EN_DIR, join(ROOT, "REPORT-en.md"), "en", "../../");
       sortedEn = out.sorted;
       filenamesEn = out.filenames;
-      console.log("REPORT-en.md y cases-en/*.html actualizados.");
+      console.log("REPORT-en.md y cases/en/*.html actualizados.");
     }
   } else {
     console.log("\n(No existe data/cases-en.json. Ejecuta 'npm run translate' para generar la versión en inglés.)");
+  }
+
+  /* Limpiar archivos .html sueltos en cases/ (estructura antigua plana) */
+  try {
+    const topFiles = await readdir(CASES_DIR, { withFileTypes: true });
+    for (const e of topFiles) {
+      if (e.isFile() && e.name.endsWith(".html")) {
+        await unlink(join(CASES_DIR, e.name));
+        console.log("  (limpieza) eliminado obsoleto en cases/:", e.name);
+      }
+    }
+  } catch (_) {}
+
+  /* Eliminar carpeta antigua cases-en/ si existe */
+  const oldCasesEnDir = join(ROOT, "cases-en");
+  try {
+    await rm(oldCasesEnDir, { recursive: true });
+    console.log("  (limpieza) eliminada carpeta obsoleta cases-en/");
+  } catch (err) {
+    if (err.code !== "ENOENT") {}
   }
 
   await writeFile(join(ROOT, "index.html"), buildSingleIndexHtml(sortedEs, filenamesEs, sortedEn, filenamesEn), "utf8");
