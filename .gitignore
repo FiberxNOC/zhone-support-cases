@@ -4,3 +4,7 @@ node_modules/
 *.log
 _debug*.txt
 report.pdf
+report-en.pdf
+data/.build-hash
+data/corrected-spelling.json
+data/cases.json.bak

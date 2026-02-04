@@ -122,9 +122,21 @@ button:focus-visible {
   transform: scale(1.1);
 }
 
+.report-index .top-bar .top-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.report-index .top-bar .top-bar-actions .lang-switch {
+  font-size: 0.8rem;
+  padding: 0.35rem 0.6rem;
+}
+
 .report-index .top-bar .theme-toggle {
   position: static;
-  margin-left: auto;
+  margin-left: 0;
 }
 
 .report-index .container,

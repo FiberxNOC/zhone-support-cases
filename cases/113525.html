@@ -33,10 +33,10 @@
         </div>
         <h1 class="case-title">Problemas para aplicar el comando onu deactivate y asistencia de cual es el comando para poner un puerto GPON default escalado w</h1>
         <div class="key-info">
-          <span class="key-info-item"><strong>Open today</strong></span>
+          <span class="key-info-item"><strong>Abierto hoy</strong></span>
           <span class="key-info-item">Created: 2026-03-07</span>
           <span class="key-info-item">Due: 2026-03-20</span>
-          <span class="key-info-item"><span class="due-info">Due in 48 days</span></span>
+          <span class="key-info-item"><span class="due-info">Vence en 43 días</span></span>
         </div>
       </header>
       <div class="props-grid">
@@ -49,9 +49,9 @@
       <div class="props-loaded-info" role="status"><span class="props-loaded-title">Propiedades cargadas en este caso (8):</span> <span class="props-loaded-list">Afectation, Case Number, Created by, Created Date, Due Date, Failure Type, Last edited by, No</span></div>
     </div>
     <div class="case-body">
-      <div class="content-divider">Case content</div>
-      <div class="detail-row-2"><section class="detail-section"><h2 class="section-title">Summary</h2><div class="detail-content"><p>Se genero caso con dasan para confirmar  el proceso de desactivar una onu</p></div></section></div>
-      <section class="detail-section"><h2 class="section-title">Problem detail</h2><div class="detail-content"><p>Se genero caso con dasan para confirmar  el proceso de desactivar una onu en un puerto GPON, ya que se usaba el comando onu deactivate, pero a los segundos la ONU se vuele activar automáticamente, en comentario dejo las validaciones realizadas, Adicionalmente solicitamos su apoyo para saber el proceso de como poner un puerto gpon o xspon default.</p></div></section><section class="detail-section"><h2 class="section-title">Resolution</h2><div class="detail-content"><p>Solution<br>Comment:<br>Hi Winder,</p><p>Regarding PON reset, according to engineering, it is structurally impossible to reset only a PON port to its default settings with a single command.</p><p>Regarding ONU deactivation, using &quot;no onu-profile ONU_ID&quot; will result in the ONU no longer receiving service, while using &quot;no onu ONU_ID&quot; will exclude the ONU from all settings on the PON port, even if it remains physically active.</p></div></section>
+      <div class="content-divider">Contenido del caso</div>
+      <div class="detail-row-2"><section class="detail-section"><h2 class="section-title">Resumen</h2><div class="detail-content"><p>Se genero caso con dasan para confirmar  el proceso de desactivar una onu</p></div></section></div>
+      <section class="detail-section"><h2 class="section-title">Detalle del problema</h2><div class="detail-content"><p>Se genero caso con dasan para confirmar  el proceso de desactivar una onu en un puerto GPON, ya que se usaba el comando onu deactivate, pero a los segundos la ONU se vuele activar automáticamente, en comentario dejo las validaciones realizadas, Adicionalmente solicitamos su apoyo para saber el proceso de como poner un puerto gpon o xspon default.</p></div></section><section class="detail-section"><h2 class="section-title">Resolución</h2><div class="detail-content"><p>Solution<br>Comment:<br>Hi Winder,</p><p>Regarding PON reset, according to engineering, it is structurally impossible to reset only a PON port to its default settings with a single command.</p><p>Regarding ONU deactivation, using &quot;no onu-profile ONU_ID&quot; will result in the ONU no longer receiving service, while using &quot;no onu ONU_ID&quot; will exclude the ONU from all settings on the PON port, even if it remains physically active.</p></div></section>
     </div>
     <div class="footer-wrap">
       <footer class="footer">
@@ -61,7 +61,7 @@
     </div>
   </div>
   <script>
-  (function(){var k='report-theme';var b=document.getElementById('theme-toggle');if(!b)return;var icon=b.querySelector('.theme-btn-icon');function u(){var s=document.documentElement.getAttribute('data-theme');var isDark=s==='dark';b.setAttribute('aria-label',isDark?'Cambiar a modo claro':'Cambiar a modo oscuro');b.setAttribute('title',isDark?'Cambiar a modo claro':'Cambiar a modo oscuro');if(icon){icon.className='theme-btn-icon fa-solid '+(isDark?'fa-sun':'fa-moon');}}u();b.addEventListener('click',function(){var s=document.documentElement.getAttribute('data-theme');s=s==='dark'?'light':'dark';localStorage.setItem(k,s);document.documentElement.setAttribute('data-theme',s);u();});})();
+  (function(){var k='report-theme';var b=document.getElementById('theme-toggle');if(!b)return;var icon=b.querySelector('.theme-btn-icon');var lightL="Cambiar a modo claro";var darkL="Cambiar a modo oscuro";function u(){var s=document.documentElement.getAttribute('data-theme');var isDark=s==='dark';b.setAttribute('aria-label',isDark?lightL:darkL);b.setAttribute('title',isDark?lightL:darkL);if(icon){icon.className='theme-btn-icon fa-solid '+(isDark?'fa-sun':'fa-moon');}}u();b.addEventListener('click',function(){var s=document.documentElement.getAttribute('data-theme');s=s==='dark'?'light':'dark';localStorage.setItem(k,s);document.documentElement.setAttribute('data-theme',s);u();});})();
   </script>
   <button type="button" id="scroll-top-btn" class="scroll-top-btn" aria-label="Subir" title="Subir"><i class="fa-solid fa-chevron-up" aria-hidden="true"></i></button>
   <script>

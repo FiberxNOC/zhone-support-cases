@@ -200,22 +200,52 @@ function getPropValue(p) {
   return null;
 }
 
-/** Todas las propiedades de la página usando los nombres del esquema de la base (trae todas las props de Notion). */
+/** Normaliza valor para guardar en allProps (fechas → string, arrays → join, etc.). */
+function normalizePropValue(value) {
+  if (value == null) return null;
+  if (typeof value === "object" && !Array.isArray(value) && value.start != null) return value.start;
+  if (Array.isArray(value)) return value.join(", ");
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  return value;
+}
+
+/** Todas las propiedades de la página: lee lo que Notion devuelve (por nombre o por ID) y resuelve el nombre desde el esquema. */
 function getAllPropsFromSchema(db, page) {
   const out = {};
-  const schema = db.properties || {};
+  const schema = db?.properties || {};
   const props = page.properties || {};
+  const norm = (s) => String(s ?? "").trim().toLowerCase();
+
+  // 1) Recorrer lo que la página trae: así no perdemos ninguna propiedad que Notion envía
+  for (const [pageKey, raw] of Object.entries(props)) {
+    const value = getPropValue(raw);
+    if (value == null) continue;
+    let displayName = pageKey;
+    // Resolver nombre: si la key es un ID del esquema, usar el nombre del esquema
+    for (const [schemaId, propSchema] of Object.entries(schema)) {
+      const schemaName = propSchema?.name;
+      if (!schemaName) continue;
+      if (pageKey === schemaId || pageKey === propSchema.id || norm(pageKey) === norm(schemaName)) {
+        displayName = schemaName;
+        break;
+      }
+    }
+    const normalized = normalizePropValue(value);
+    if (normalized != null) out[displayName] = normalized;
+  }
+
+  // 2) Completar desde el esquema por si la página trae props por ID y la key no coincidió antes
   for (const [propId, propSchema] of Object.entries(schema)) {
-    const name = propSchema.name;
-    const raw = props[propId] ?? props[propSchema.id] ?? props[name];
+    const name = propSchema?.name;
+    if (!name || out[name] != null) continue;
+    const raw = props[propId] ?? props[propSchema?.id] ?? props[name];
     const value = getPropValue(raw);
     if (value != null) {
-      if (typeof value === "object" && !Array.isArray(value) && value.start) out[name] = value.start;
-      else if (Array.isArray(value)) out[name] = value.join(", ");
-      else if (typeof value === "boolean") out[name] = value ? "Yes" : "No";
-      else out[name] = value;
+      const normalized = normalizePropValue(value);
+      if (normalized != null) out[name] = normalized;
     }
   }
+
   return out;
 }
 
@@ -297,28 +327,32 @@ function getFromAllPropsByNormalizedKey(allProps, ...internalKeys) {
 
 /** Infiere model, platform y firmwareVersion desde nombre del caso y texto cuando Notion no los tiene. */
 function inferDeviceInfo(c) {
-  const text = [c.caseName, c.resumen, c.notas, c.detalleDelProblema].filter(Boolean).join("\n");
+  const text = [c.caseName, c.resumen, c.notas, c.detalleDelProblema, c.resolucion].filter(Boolean).join("\n");
   if (!text) return { model: null, platform: null, firmwareVersion: null };
 
   const modelPatterns = [
     /\b(?:ONT|ONU)\s+model\s+(\S+)/i,
     /\b(?:ONT|ONU)\s+(\d{4}[A-Z0-9-]*)/i,
-    /\b(2466GN|5302|5228XG)\b/i,
-    /\b(MXK-F108|MXK-F-108)\b/i,
+    /\b(2466GN|5302|5228XG|5228XG-B)\b/i,
+    /\b(MXK-F108|MXK-F-108|MXK-F108)\b/i,
     /\b(LTF5308B-BHB\+|LTF5308B-BCA\+|XGS-GP-COMBO-SFP\+?)\b/i,
     /\bmodel\s+(\S+)/i,
+    /\b(?:equipo|unit)\s+(?:modelo\s+)?(\d{4}[A-Z0-9-]*)/i,
   ];
   const platformPatterns = [
     /\b(V1-16XC|v1-16xc)\b/i,
     /\b(MXK-F108|MXK-F-108|MXK\s*F-?108)\b/i,
-    /\bOLT\s+(V1-16XC|MXK[^\s]*)/i,
+    /\bOLT\s+(V1-16XC|MXK[^\s)]*)/i,
+    /\b(?:en|en el|en la)\s+(?:OLT\s+)?(V1-16XC|MXK[^\s)]*)/i,
+    /\bprovisioned?\s+in\s+(V1-16XC|MXK[^\s)]*)/i,
   ];
   const fwPatterns = [
     /\b(S7\.0\.\d{3})\b/i,
     /\b(7\.0\.\d{3})\b/,
     /\b(0?70\d{4})\b/,
     /\b(MXK\s+[\d.]+(?:\.[\d.]+)*)\b/i,
-    /\b(?:sw load|firmware|version)\s*[:\s]+(\S+)/i,
+    /\b(?:Firmware|firmware|FW|version|sw load)\s*[:\s(]*(\S+?)[\s)]/i,
+    /\b(?:Firmware\s+)?(S7\.\d+\.\d+)\b/i,
   ];
 
   const firstMatch = (str, patterns) => {
@@ -334,6 +368,14 @@ function inferDeviceInfo(c) {
     platform: firstMatch(text, platformPatterns),
     firmwareVersion: firstMatch(text, fwPatterns),
   };
+}
+
+/** Infiere internalTicket desde el texto cuando aparece "Ticket 12345" o similar. */
+function inferInternalTicket(c) {
+  const text = [c.caseName, c.resumen, c.notas, c.detalleDelProblema, c.resolucion].filter(Boolean).join("\n");
+  if (!text) return null;
+  const m = text.match(/\b(?:ticket|internal)\s*#?\s*(\d{5,})\b/i);
+  return m ? m[1] : null;
 }
 
 function parsePage(page, db) {
@@ -374,9 +416,10 @@ function parsePage(page, db) {
     getFromAllPropsByNormalizedKey(allProps, "fw") ?? getPropBySchemaName(page, db, ["Firmware Version", "Firmware", "FW"]) ?? getPropByKeyMatch(allProps, "firmware", "fw", "version");
 
   const provider = allProps["Provider"] ?? getPropBySchemaName(page, db, ["Provider"]) ?? getPropByKeyMatch(allProps, "provider");
-  const device = allProps["Device"] ?? getPropBySchemaName(page, db, ["Device"]);
-  const serialNumber = allProps["Serial Number"] ?? getPropBySchemaName(page, db, ["Serial Number"]);
-  const internalTicket = allProps["Internal Ticket"] ?? getPropBySchemaName(page, db, ["Internal Ticket"]);
+  const device = allProps["Device"] ?? getPropBySchemaName(page, db, ["Device"]) ?? getPropByKeyMatch(allProps, "device", "equipo");
+  const serialNumber = allProps["Serial Number"] ?? getPropBySchemaName(page, db, ["Serial Number"]) ?? getPropByKeyMatch(allProps, "serial");
+  const internalTicket =
+    allProps["Internal Ticket"] ?? getPropBySchemaName(page, db, ["Internal Ticket"]) ?? getPropByKeyMatch(allProps, "internal ticket", "internal", "ticket");
 
   /* Escribir en allProps todo lo que hayamos obtenido por esquema, para que el reporte muestre las 16 props (no solo las 9 de getAllPropsFromSchema). */
   const setProp = (key, value) => {
@@ -522,13 +565,27 @@ async function main() {
   if (skipped > 0) console.log(`  (${skipped} sin cambios, reutilizando contenido anterior)`);
   if (skipped === cases.length && cases.length > 0) console.log(`  (El tiempo restante es la consulta a Notion para comprobar si hubo cambios.)`);
 
-  // Si Model, Platform o FW no vienen de Notion, intentar inferir desde nombre y texto
+  // Inferir model, platform, firmwareVersion e internalTicket desde texto cuando Notion no los trae
   for (const c of cases) {
-    if (c.model == null || c.platform == null || c.firmwareVersion == null) {
-      const inferred = inferDeviceInfo(c);
-      if (c.model == null && inferred.model) c.model = inferred.model;
-      if (c.platform == null && inferred.platform) c.platform = inferred.platform;
-      if (c.firmwareVersion == null && inferred.firmwareVersion) c.firmwareVersion = inferred.firmwareVersion;
+    const inferred = inferDeviceInfo(c);
+    if (c.model == null && inferred.model) {
+      c.model = inferred.model;
+      if (c.allProps) c.allProps["Model"] = inferred.model;
+    }
+    if (c.platform == null && inferred.platform) {
+      c.platform = inferred.platform;
+      if (c.allProps) c.allProps["Platform"] = inferred.platform;
+    }
+    if (c.firmwareVersion == null && inferred.firmwareVersion) {
+      c.firmwareVersion = inferred.firmwareVersion;
+      if (c.allProps) c.allProps["Firmware Version"] = inferred.firmwareVersion;
+    }
+    if (c.internalTicket == null) {
+      const ticket = inferInternalTicket(c);
+      if (ticket) {
+        c.internalTicket = ticket;
+        if (c.allProps) c.allProps["Internal Ticket"] = ticket;
+      }
     }
   }
 

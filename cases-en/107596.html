@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>39. CloudCheck is not detecting 5G Wi-Fi configuration.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../styles/report.css">
+</head>
+<body class="report-case">
+  <script>
+  (function(){var k='report-theme';var s=document.documentElement.getAttribute('data-theme')||localStorage.getItem(k)||(window.matchMedia&&window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',s);})();
+  </script>
+  <div class="container">
+    <header class="top-bar" role="banner">
+      <a href="../index.html#en" class="logo" aria-label="Back to report"><img src="../assets/logoheader-1.svg" alt="FiberX" class="logo-icon logo-icon-dark" width="168" height="52" loading="lazy" /><img src="../assets/logoheader-light.svg" alt="FiberX" class="logo-icon logo-icon-light" width="168" height="52" loading="lazy" /></a>
+      <a href="../index.html#en" class="back-link">← Back to report</a>
+      <button type="button" id="theme-toggle" class="theme-toggle theme-btn" aria-label="Switch to light mode" title="Switch to light mode"><i class="fa-solid fa-sun theme-btn-icon" aria-hidden="true"></i></button>
+    </header>
+    <div class="case-details">
+      <header class="case-hero">
+        <div class="case-hero-top">
+          <div class="case-hero-top-left">
+            <span class="case-num">Case #107596</span>
+            
+            
+            <span class="badge" style="--badge-color:#cbd5e1">Low</span>
+          </div>
+          <span class="badge status-badge-hero status-badge--done" style="--badge-color:#64748b"><span class="status-dot" aria-hidden="true"></span>Done</span>
+        </div>
+        <h1 class="case-title">CloudCheck is not detecting 5G Wi-Fi configuration.</h1>
+        <div class="key-info">
+          <span class="key-info-item"><strong>Closed in 650 days</strong></span>
+          <span class="key-info-item">Created: 2024-04-23</span>
+          <span class="key-info-item">Due: 2024-09-20</span>
+          
+        </div>
+      </header>
+      <div class="props-grid">
+        <div class="prop-group"><h3 class="prop-group-title">Identification</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">No</span><span class="prop-value">31</span></div><div class="prop-row"><span class="prop-label">Case Number</span><span class="prop-value">107596</span></div></div></div>
+        <div class="prop-group"><h3 class="prop-group-title">Dates</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">Created Date</span><span class="prop-value">2024-04-23</span></div><div class="prop-row"><span class="prop-label">Due Date</span><span class="prop-value">2024-09-20</span></div></div></div>
+        <div class="prop-group"><h3 class="prop-group-title">Classification</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">Failure Type</span><span class="prop-value">cloudcheck_</span></div><div class="prop-row"><span class="prop-label">Afectation</span><span class="prop-value">Low</span></div></div></div>
+        <div class="prop-group"><h3 class="prop-group-title">Device</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">Firmware Version</span><span class="prop-value">7.0.064</span></div></div></div>
+        <div class="prop-group"><h3 class="prop-group-title">Other</h3><div class="prop-list"><div class="prop-row"><span class="prop-label">Last edited by</span><span class="prop-value">José Luis</span></div><div class="prop-row"><span class="prop-label">Created by</span><span class="prop-value">José Luis</span></div></div></div>
+      </div>
+      <div class="props-loaded-info" role="status"><span class="props-loaded-title">Properties loaded for this case (9):</span> <span class="props-loaded-list">Afectation, Case Number, Created by, Created Date, Due Date, Failure Type, Firmware Version, Last edited by, No</span></div>
+    </div>
+    <div class="case-body">
+      <div class="content-divider">Case content</div>
+      <div class="detail-row-2"><section class="detail-section"><h2 class="section-title">Summary</h2><div class="detail-content"><p>Once configured and CloudCheck is enabled, CloudCheck is not showing the 5G SSID even though the ONT webUI and the CLI are showing the 5G active. When the VLAN mapping is applied to radio 6 (WL1.1) - DZS5G_SSID1 the 5G SSID appears in CC, but it is not the expected SSID from radio 5 (WL1.0)- Eladivinowifi-5G.</p><p>We have reverted the customer back to version 7.0.064 which is working as expected until a new version becomes available.</p></div></section></div>
+      <section class="detail-section"><h2 class="section-title">Problem detail</h2><div class="detail-content"><p>Once configured and CloudCheck is enabled, CloudCheck is not displaying the 5G SSID despite the ONT web UI and CLI showing the 5G active. When VLAN mapping is applied to radio 6 (WL1.1) - DZS5G_SSID1, the 5G SSID does appear in CC, but it is not the expected SSID from radio 5 (WL1.0)- Eladivinowifi-5G. We have reverted the customer back to version 7.0.064, which works as expected until a new version becomes available.</p></div></section><section class="detail-section"><h2 class="section-title">Resolution</h2><div class="detail-content"><p>Once configured and CloudCheck is enabled, CloudCheck is not showing the 5G SSID even though the ONT web UI and CLI are showing the 5G active. When VLAN mapping is applied to radio 6 (WL1.1) - DZS5G_SSID1, the 5G SSID does appear in CC, but it is not the expected SSID from radio 5 (WL1.0)- Eladivinowifi-5G. We have reverted the customer back to firmware version 7.0.064, which is working as expected until a new version becomes available.</p></div></section>
+    </div>
+    <div class="footer-wrap">
+      <footer class="footer">
+        <a href="https://www.notion.so/CloudCheck-is-not-detecting-5G-wifi-configuration-2f7e3293f430801f90f1cb2b99b8eb33" target="_blank" rel="noopener">View in Notion →</a><br>
+        FiberX NetOps Team · 2026
+      </footer>
+    </div>
+  </div>
+  <script>
+  (function(){var k='report-theme';var b=document.getElementById('theme-toggle');if(!b)return;var icon=b.querySelector('.theme-btn-icon');var lightL="Switch to light mode";var darkL="Switch to dark mode";function u(){var s=document.documentElement.getAttribute('data-theme');var isDark=s==='dark';b.setAttribute('aria-label',isDark?lightL:darkL);b.setAttribute('title',isDark?lightL:darkL);if(icon){icon.className='theme-btn-icon fa-solid '+(isDark?'fa-sun':'fa-moon');}}u();b.addEventListener('click',function(){var s=document.documentElement.getAttribute('data-theme');s=s==='dark'?'light':'dark';localStorage.setItem(k,s);document.documentElement.setAttribute('data-theme',s);u();});})();
+  </script>
+  <button type="button" id="scroll-top-btn" class="scroll-top-btn" aria-label="Scroll up" title="Scroll up"><i class="fa-solid fa-chevron-up" aria-hidden="true"></i></button>
+  <script>
+  (function(){var btn=document.getElementById('scroll-top-btn');if(!btn)return;function onScroll(){btn.classList.toggle('is-visible',(window.scrollY||document.documentElement.scrollTop)>400);}window.addEventListener('scroll',onScroll,{passive:true});onScroll();btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});})();
+  </script>
+</body>
+</html>

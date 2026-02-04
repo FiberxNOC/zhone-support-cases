@@ -6,8 +6,11 @@
   "scripts": {
     "check": "node scripts/check-notion.js",
     "sync": "node scripts/sync-from-notion.js",
+    "translate": "node scripts/translate-to-english.js",
+    "correct-spelling": "node scripts/correct-spelling.js",
     "build": "node scripts/build-report.js",
     "report": "npm run sync && npm run build",
+    "report:all": "npm run sync && npm run translate && npm run build && npm run pdf",
     "pdf": "node scripts/build-pdf-report.js",
     "serve": "node scripts/serve.js",
     "verify": "node scripts/verify.js",
